@@ -26,3 +26,6 @@ class Priority:
 
     def __eq__(self, other):
         return self.value == other.value
+
+    def __str__(self):
+        return f"id: {self.id}; value: {self.value}"
