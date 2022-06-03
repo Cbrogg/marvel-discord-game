@@ -6,6 +6,12 @@ class Priority:
         self.id = id
         self.value = value
 
+    def __add__(self, other):
+        return Priority(self.id, self.value + other)
+
+    def __sub__(self, other):
+        return Priority(self.id, self.value - other)
+
     def __iadd__(self, other):
         return Priority(self.id, self.value + other)
 
