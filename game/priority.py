@@ -7,10 +7,22 @@ class Priority:
         self.value = value
 
     def __iadd__(self, other):
-        return Priority(self.id, self.value+other)
+        return Priority(self.id, self.value + other)
 
     def __isub__(self, other):
         return Priority(self.id, self.value - other)
 
-    def __cmp__(self, other):
-        return self.value - other.value
+    def __gt__(self, other):
+        return self.value > other.value
+
+    def __lt__(self, other):
+        return self.value < other.value
+
+    def __ge__(self, other):
+        return self.value >= other.value
+
+    def __le__(self, other):
+        return self.value <= other.value
+
+    def __eq__(self, other):
+        return self.value == other.value
