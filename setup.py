@@ -6,5 +6,5 @@ setup(
     description='A basic Marvel Game API',  # short description
     url='https://github.com/Cbrogg/marvel-discord-game',  # package URL
     install_requires=['uuid'],  # list of packages this package depends on.
-    packages=['marvel_game'],  # List of module names that installing this package will provide.
+    packages=['game'],  # List of module names that installing this package will provide.
 )
