@@ -2,7 +2,7 @@ class Priority:
     id: int
     value: int
 
-    def __init__(self, id, value):
+    def __init__(self, id, value=0):
         self.id = id
         self.value = value
 

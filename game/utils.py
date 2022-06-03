@@ -1,4 +1,7 @@
+from typing import Any
+
 from .consts import flags
+from .priority import Priority
 
 
 def parse_message(message: str) -> dict:
@@ -35,3 +38,17 @@ def special_mapper(attr: int) -> str:
         return "высокий"
     else:
         return "исключительный"
+
+
+def priority_to_dict(ar) -> dict:
+    d = {}
+    for pr in ar:
+        d[str(pr.id)] = pr.value
+    return d
+
+
+def priority_from_dict(d: dict) -> Any:
+    p = []
+    for key in d.keys():
+        p.append(Priority(int(key), d[key]))
+    return p
