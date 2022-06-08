@@ -1,0 +1,7 @@
+pymongo==4.1.1
+uuid~=1.30
+pip==22.1.2
+wheel~=0.37.1
+Brotli~=1.0.9
+setuptools==62.3.3
+docutils==0.18.1

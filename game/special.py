@@ -26,3 +26,30 @@ class Special:
             'a': self.a,
             'l': self.l,
         }
+
+    def stealth(self) -> int:
+        return int(25 + self.a + int(self.l / 3))
+
+    def detection(self) -> int:
+        return int(30 + self.p + int(self.l / 2))
+
+    def reaction(self) -> int:
+        return int(2 * self.p + 2 * self.a)
+
+    def max_weight(self) -> int:
+        return 30 + int(pow(30, ((self.s - 1) / 5)))
+
+    def max_action_points(self) -> int:
+        return int(self.a / 3)
+
+    def max_hp(self) -> int:
+        return int(pow(100, (1 + (self.e / 30))) / 2 + self.s)
+
+    def heal_points(self) -> int:
+        return int(self.e / 3)
+
+    def max_stamina(self) -> int:
+        return int(self.e * 20)
+
+    def stamina_points(self) -> int:
+        return int(self.e * 2)

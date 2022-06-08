@@ -18,6 +18,9 @@ class EnemyHealthStatus(Enum):
 class EnemyCombatStatus(Enum):
     IDLE = 'idle'
     COMBAT = 'combat'
+    MILLE = 'mille_combat'
+    RANGE = 'range_combat'
+    MAGIC = 'magic_combat'
     CHASE = 'chase'
 
 
