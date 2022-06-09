@@ -14,7 +14,7 @@ class Enemy(Character):
     _targets: list[Priority]
 
     _msg_take_damage_male = "{} получил {} урона."
-    _msg_tate_damage_female = "{} получила {} урона."
+    _msg_take_damage_female = "{} получила {} урона."
 
     _msg_dead_male = " {} мертв.\n"
     _msg_dead_female = " {} мертва.\n"
@@ -85,10 +85,10 @@ class Enemy(Character):
         return s
 
     def max_hp(self) -> int:
-        return int(5 + (self._special.s + self._special.e * 3))
+        return int(5 + (self._avatar.special.s + self._avatar.special.e * 3))
 
     def take_damage(self, damage: int) -> str:
-        d = damage - self._special.e if damage > self._special.e else 0
+        d = damage - self._avatar.special.e if damage > self._avatar.special.e else 0
         msg = self._msg_take_damage_male.format(self._name, d) if self._gender == Gender.MALE else self._msg_take_damage_female.format(self._name, d)
         self._hp -= d
         if self._hp <= 0:
@@ -131,7 +131,7 @@ class Enemy(Character):
         return str(self._h_status)
 
     def is_healthy(self) -> bool:
-        return self._hp == self._special.max_hp()
+        return self._hp == self.max_hp()
 
     def is_idle(self) -> bool:
         return self._c_status == EnemyCombatStatus.IDLE

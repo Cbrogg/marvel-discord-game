@@ -52,6 +52,7 @@ class Player(Character):
     _msg_stat = "Текущий статус персонажа {name}: {status}.\n"
     _msg_fall = "{name} без сознания.\n"
     _msg_self_get_damage = 'Вы получили {damage} урона.\n'
+    _msg_self_get_krit_damage = 'Разозлённый противник нанёс вам {damage} урона.\n'
     _msg_def_get_damage = '{defender_name} получил {damage} урона вместо {name}.\n'
 
     # Побег из боя или уклонение
@@ -72,14 +73,14 @@ class Player(Character):
         self._player_class = data.get('class', 'физ')
 
     def max_range_damage(self) -> int:
-        return int(self._special.p * 3 + self._special.a * 2) if self._player_class == 'физ' else int(
-            self._special.p * 2 + self._special.a)
+        return int(self._avatar.special.p * 3 + self._avatar.special.a * 2) if self._player_class == 'физ' else int(
+            self._avatar.special.p * 2 + self._avatar.special.a)
 
     def max_magic_damage(self) -> int:
-        return 0 if self._player_class != 'маг' else int(self._special.p * 2 + self._special.i * 2)
+        return 0 if self._player_class != 'маг' else int(self._avatar.special.p * 2 + self._avatar.special.i * 2)
 
     def take_damage(self, damage: int) -> int:
-        d = damage - self._special.e if damage > self._special.e else 0
+        d = damage - self._avatar.special.e if damage > self._avatar.special.e else 0
         if self.hp - d < 0:
             self.hp = 0
         else:
@@ -101,9 +102,9 @@ class Player(Character):
         elif 20 <= self.hp < int(self.max_hp() * 2 / 5):
             return str(PlayerHealthStatus.DAM60)
         elif 0 < self.hp < 20:
-            return 'критическое состояние'
+            return str(PlayerHealthStatus.DAM80)
         else:
-            return 'без сознания'
+            return str(PlayerHealthStatus.DEAD)
 
     def has_enemy(self) -> bool:
         if self._enemy is None:
@@ -123,30 +124,30 @@ class Player(Character):
             self.hp += self._avatar.special.heal_points()
 
     def kill_enemy(self):
-        if self.zombie is not None:
-            self.zombie = None
-            self.zombie_id = ""
+        if self._enemy is not None:
+            self._enemy = None
+            self._enemy_id = ""
             self._kills += 1
-            self.z_status = 'не замечен' if random.randint(0, 100) > 50 else 'замечен'
+            self._e_status = 'не замечен' if random.randint(0, 100) > 50 else 'замечен'
 
     def drop_enemy(self):
-        if self.zombie is not None:
-            self.zombie = None
-            self.zombie_id = ""
+        if self._enemy is not None:
+            self._enemy = None
+            self._enemy_id = ""
 
-    def set_enemy(self, z: Enemy):
-        self.z_status = 'замечен'
-        self.zombie = z
+    def set_enemy(self, e: Enemy):
+        self._e_status = 'замечен'
+        self._enemy = e
 
     def get_chase_escape_chance(self) -> int:
         if not self.has_enemy():
             return 100
         else:
-            return int(50 * (self._special.reaction() / self._enemy._special.reaction()))
+            return int(50 * (self._avatar.special.reaction() / self._enemy._avatar.special.reaction()))
 
     def is_priority_target(self) -> bool:
-        if self.zombie is not None:
-            return str(self._player_id) == self.zombie.get_priority_target_id()
+        if self._enemy is not None:
+            return str(self._player_id) == self._enemy_id.get_priority_target_id()
         else:
             return False
 
@@ -154,16 +155,16 @@ class Player(Character):
         if enemy_stealth == 0:
             return 0
         else:
-            return int(30 * (self._special.detection() / enemy_stealth))
+            return int(30 * (self._avatar.special.detection() / enemy_stealth))
 
     def stealth_chance(self, enemy_detection: int = 0) -> int:
         if enemy_detection == 0:
             return 100
         else:
-            return int(30 * (enemy_detection / self._special.stealth()))
+            return int(30 * (enemy_detection / self._avatar.special.stealth()))
 
     def get_enemy_status(self) -> str:
-        if self.zombie is not None:
-            return self.zombie.get_status()
+        if self._enemy is not None:
+            return self._enemy.get_combat_status()
         else:
             return "нет"

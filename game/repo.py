@@ -12,18 +12,23 @@ class Repo:
     def __init__(self, table: Collection):
         self._source = table
 
+    # Добавить игрока или моба
     def insert(self, c: Character):
         self._source.insert_one(c.export())
 
+    # Удалить игрока или моба
     def delete(self, c: Character):
         self._source.delete_one({'_id': c.get_id()})
 
+    # Обновить игрока или моба
     def update(self, c: Character):
         self._source.update_one({'_id': c.get_id()}, {'$set': c.export()})
 
+    # Выбор игрока или моба по внутреннему ID
     def get_by_id(self, id: str) -> dict | None:
         return self._source.find_one({'_id': id})
 
+    # Выбор всех объектов
     def select(self) -> Cursor | None:
         return self._source.find({})
 
@@ -32,6 +37,7 @@ class PlayerRepo(Repo):
     def __init__(self, table: Collection):
         super().__init__(table)
 
+    # Выбор всех игроков
     def select(self) -> list[Player]:
         p = []
         pls = self._source.find({})
@@ -39,10 +45,12 @@ class PlayerRepo(Repo):
             p.append(Player(pl))
         return p
 
+    # Выбор игрока по внутреннему ID
     def get_by_id(self, id: str) -> Player | None:
         p = self._source.find_one({'_id': id})
         return None if p is None else Player(p)
 
+    # Выбор игрока по дискордному ID
     def get_by_player_id(self, id: int) -> Player | None:
         p = self._source.find_one({'player_id': id})
         return None if p is None else Player(p)
@@ -68,6 +76,7 @@ class MobRepo(Repo):
             e.append(Enemy(enemy))
         return e
 
+    # Выбор врагов по типу. Возможен выбор врагов по типу в определённом канале
     def select_by_type(self, type: str, channel: int | None = None):
         e = []
         if channel is None:
@@ -78,6 +87,7 @@ class MobRepo(Repo):
             e.append(Enemy(enemy))
         return e
 
+    # Выбор врагов по названию. Возможен выбор врагов по названию в определённом канале
     def select_by_name(self, name: str, channel: int | None = None):
         e = []
         if channel is None:
@@ -88,6 +98,7 @@ class MobRepo(Repo):
             e.append(Enemy(enemy))
         return e
 
+    # Выбор названий по типу врагов. Возможен выбор врагов в определённом канале
     def select_names_by_type(self, type: str, channel: int | None = None) -> list[str]:
         names = []
         enms = self.select_by_type(type, channel)
