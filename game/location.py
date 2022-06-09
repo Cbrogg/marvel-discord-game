@@ -47,4 +47,3 @@ class Location:
 
         return mob
 # channel = Location(channel_id, self.mob_table.find({'channel': channel_id}))
-

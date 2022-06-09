@@ -24,7 +24,7 @@ class EnemyCombatStatus(Enum):
     CHASE = 'chase'
 
 
-class PlayerHealthStatus(Enum):
+class HealthStatus(Enum):
     HEALTH = 'здоров'
     DAM10 = 'легкое ранение'
     DAM20 = 'среднее ранение'

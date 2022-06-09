@@ -1,4 +1,6 @@
 import uuid
+
+from .enums import HealthStatus
 from .special import Special
 
 
@@ -89,8 +91,35 @@ class Character:
             'effects': self._effects
         }
 
+    def status(self) -> str:
+        if self._hp >= self.max_hp():
+            return str(HealthStatus.HEALTH)
+        elif int(self.max_hp() * 4 / 5) <= self._hp:
+            return str(HealthStatus.DAM10)
+        elif int(self.max_hp() * 2 / 5) <= self._hp < int(self.max_hp() * 4 / 5):
+            return str(HealthStatus.DAM20)
+        elif 20 <= self._hp < int(self.max_hp() * 2 / 5):
+            return str(HealthStatus.DAM60)
+        elif 0 < self._hp < 20:
+            return str(HealthStatus.DAM80)
+        else:
+            return str(HealthStatus.DEAD)
+
+    def heal(self, heal: int):
+        if self._hp < int(self.max_hp() * 4 / 5):
+            if self._hp + heal > int(self.max_hp() * 4 / 5):
+                self._hp = int(self.max_hp() * 4 / 5)
+            else:
+                self._hp += heal
+
+    def is_healable(self) -> bool:
+        return self._hp < int(self.max_hp() * 4 / 5)
+
     def get_id(self) -> str:
         return self._id
 
     def get_name(self) -> str:
         return self._name
+
+    def get_type(self) -> str:
+        return self._type
