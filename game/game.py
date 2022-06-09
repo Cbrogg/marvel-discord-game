@@ -35,17 +35,6 @@ class Game:
 
         return types
 
-    def get_any_mob(self, channel) -> Enemy | None:
-        types = self.get_mob_list(channel)
-        if len(types) == 0:
-            return None
-
-        name = types.keys()[random.randint(0, len(types))]
-
-        e = self._enemies_table.find_one({'channel': channel, 'name': name, 'type': {'$ne': 'boss'}})
-
-        return Enemy(e)
-
     def get_enemy_by_id(self, id) -> Enemy | None:
         if id == "":
             return None
@@ -65,21 +54,6 @@ class Game:
 
     def is_enemy_alive(self, id) -> bool:
         return self._enemies_table.count_documents({'_id': id}) > 0
-
-    def is_channel_clean(self, id) -> bool:
-        return not self.zombies.count_documents({'channel': id}) > 0
-
-    def get_max_detection(self, id) -> int:
-        h = self.zombies.find_one({'channel': id, 'name': 'Ходок'})
-        h_r = 30 + h['special']['p'] * 2 if h is not None else 0
-        b = self.zombies.find_one({'channel': id, 'name': 'Бегун'})
-        b_r = 30 + b['special']['p'] * 2 if b is not None else 0
-        t = self.zombies.find_one({'channel': id, 'name': 'Толстяк'})
-        t_r = 30 + t['special']['p'] * 2 if t is not None else 0
-        o = self.zombies.find_one({'channel': id, 'name': 'Отродье'})
-        o_r = 30 + o['special']['p'] * 2 if o is not None else 0
-
-        return max(h_r, b_r, t_r, o_r)
 
     # def on_message(self, message: discord.Message):
     #     if message.author.bot:

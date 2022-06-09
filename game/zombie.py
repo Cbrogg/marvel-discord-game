@@ -1,8 +1,11 @@
-# from typing import Any
-#
-#
-# class Zombie:
-#     def __init__(self, z: dict, ch_id=None):
+from .enemy import Enemy
+
+
+class Zombie(Enemy):
+    _msg_take_damage = "Зомби {} получил {} урона."
+    _msg_dead = ""
+
+   # def __init__(self, z: dict, ch_id=None):
 #         self.special: dict = z['special']
 #         self.id = z['_id']
 #         self.name = z['name']

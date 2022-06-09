@@ -11,7 +11,13 @@ class Enemy(Character):
     _h_status: EnemyHealthStatus
     _level: int
     _channel: int
-    _targets: [Priority]
+    _targets: list[Priority]
+
+    _msg_take_damage_male = "{} получил {} урона."
+    _msg_tate_damage_female = "{} получила {} урона."
+
+    _msg_dead_male = " {} мертв.\n"
+    _msg_dead_female = " {} мертва.\n"
 
     def __init__(self, data: dict, ch_id=None):
         super().__init__(data)
@@ -97,10 +103,10 @@ class Enemy(Character):
 
     def take_damage(self, damage: int) -> str:
         d = damage - self._special.e if damage > self._special.e else 0
-        msg = f"{self._name} получил {d} урона." if self._gender == Gender.MALE else f"{self._name} получила {d} урона."
+        msg = self._msg_take_damage_male.format(self._name, d) if self._gender == Gender.MALE else self._msg_take_damage_female.format(self._name, d)
         self._hp -= d
         if self._hp <= 0:
-            msg += f" {self._name} мертв.\n" if self._gender == Gender.MALE else f" {self._name} мертва.\n"
+            msg += self._msg_dead_male.format(self._name) if self._gender == Gender.MALE else self._msg_dead_female.format(self._name)
             self._hp = 0
             self._h_status = EnemyHealthStatus.DEAD
         else:
@@ -138,9 +144,18 @@ class Enemy(Character):
     def get_health_status(self) -> str:
         return str(self._h_status)
 
+    def get_name(self) -> str:
+        return self._name
+
+    def is_healthy(self) -> bool:
+        return self._hp == self._special.max_hp()
+
+    def is_idle(self) -> bool:
+        return self._c_status == EnemyCombatStatus.IDLE
+
 
 class EnemyGroup:
     _leader: Enemy
-    _vanguard: [Enemy]
-    _core: [Enemy]
-    _rearguard: [Enemy]
+    _vanguard: list[Enemy]
+    _core: list[Enemy]
+    _rearguard: list[Enemy]

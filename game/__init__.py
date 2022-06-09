@@ -25,8 +25,10 @@ from .consts import *
 from .enemy import *
 from .enums import *
 from .game import *
+from .location import *
 from .player import *
 from .priority import *
+from .repo import *
 from .special import *
 from .utils import *
 from .zombie import *
