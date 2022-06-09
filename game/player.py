@@ -59,7 +59,7 @@ _msg_dodge = "Вы смогли уклониться и получили 0 ур�
 
 class Player(Character):
 
-    def __init__(self, data: dict = {}, enemy: Enemy | None = None):
+    def __init__(self, data: dict, enemy: Enemy | None = None):
         super().__init__(data)
         self._player_id = data.get('player_id', 0)
         self._kills = data.get('kills', 0)
