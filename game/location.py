@@ -2,6 +2,10 @@ import random
 
 from .enemy import Enemy
 
+_msg_clean_location = "Вокруг нет ни следа противника.\n"
+_msg_count_enemy = "Осмотревшись, вы насчитали {count} {type}.\n"
+_msg_hear_enemy = "В округе слышны {type}.\n"
+
 
 class Location:
     _id: int
@@ -46,4 +50,23 @@ class Location:
             mob = self._mobs[name][0]
 
         return mob
+
+    def look_around(self) -> str:
+        if self.is_clean():
+            return _msg_clean_location
+
+        else:
+            r = random.randint(1, 20)
+            count = 0
+            for name in self._mobs.keys():
+                count += len(self._mobs[name])
+
+            if r == 20:
+                return _msg_count_enemy.format(count=count, type=self.get_any_mob().get_type())
+            elif 10 <= r < 20:
+                c = 'не больше десятка' if count < 10 else 'не меньше десятка'
+                return _msg_count_enemy.format(count=c, type=self.get_any_mob().get_type())
+            elif r < 10:
+                return _msg_hear_enemy.format(type=self.get_any_mob().get_type())
+
 # channel = Location(channel_id, self.mob_table.find({'channel': channel_id}))
