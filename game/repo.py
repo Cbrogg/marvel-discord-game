@@ -1,10 +1,7 @@
-from typing import List
-
 from pymongo.collection import Collection
 from pymongo.cursor import Cursor
 
-from . import Player
-from .character import Character
+from .character import Character, Avatar
 from .player import Player
 from .enemy import Enemy
 
@@ -55,6 +52,12 @@ class MobRepo(Repo):
     def __init__(self, table: Collection):
         super().__init__(table)
 
+    # Выбор врага по ID
+    def get_by_id(self, id: str) -> Enemy | None:
+        p = self._source.find_one({'_id': id})
+        return None if p is None else Enemy(p)
+
+    # Выбор врагов. Возможен выбор врагов в определённом канале
     def select(self, channel: int | None = None) -> list[Enemy]:
         e = []
         if channel is None:
@@ -87,8 +90,44 @@ class MobRepo(Repo):
 
     def select_names_by_type(self, type: str, channel: int | None = None) -> list[str]:
         names = []
-        self._source.find()
+        enms = self.select_by_type(type, channel)
+        for enemy in enms:
+            try:
+                names.index(enemy.get_name())
+            except ValueError:
+                names.append(enemy.get_name())
+        return names
 
-    def get_by_id(self, id: str) -> Enemy | None:
+
+class PlayerAvatarRepo(Repo):
+    def __init__(self, table: Collection):
+        super().__init__(table)
+
+    def get_by_id(self, id: str) -> Avatar | None:
         p = self._source.find_one({'_id': id})
-        return None if p is None else Enemy(p)
+        return None if p is None else Avatar(p)
+
+    def get_active_by_player_id(self, id: int) -> Avatar | None:
+        p = self._source.find_one({'player_id': id, 'active': True})
+        return None if p is None else Avatar(p)
+
+    def select_by_player_id(self, id: int) -> list[Avatar] | None:
+        p = []
+        pls = self._source.find({'player_id': id})
+        for pl in pls:
+            p.append(Avatar(pl))
+        return p
+
+
+class MobAvatarRepo(Repo):
+    def __init__(self, table: Collection):
+        super().__init__(table)
+
+    def get_by_id(self, id: str) -> Avatar | None:
+        p = self._source.find_one({'_id': id})
+        return None if p is None else Avatar(p)
+
+    def get_by_name(self, name: str) -> Avatar | None:
+        m = self._source.find_one({'name': name})
+        return None if m is None else Avatar(m)
+

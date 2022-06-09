@@ -24,17 +24,8 @@ class Enemy(Character):
         self._gender = data.get('gender', Gender.MALE)
         self._level = data.get('level', 1)
         self._channel = data.get('channel', ch_id)
-        self._status = data.get('status', EnemyCombatStatus.IDLE)
+        self._c_status = data.get('status', EnemyCombatStatus.IDLE)
         self.targets_from_dict(data.get('targets', {}))
-
-    def max_mille_damage(self) -> int:
-        return int(self._special.s * 2 + self._special.a)
-
-    def max_range_damage(self) -> int:
-        return int(self._special.p * 2 + self._special.a)
-
-    def max_magic_damage(self) -> int:
-        return int(self._special.p * 2 + self._special.i * 2)
 
     def get_max_priority(self) -> Priority:
         return max(self._targets)
@@ -84,19 +75,14 @@ class Enemy(Character):
         self._c_status = EnemyCombatStatus.IDLE
 
     def export(self) -> dict:
-        return {
-            '_id': self._id,
-            'name': self._name,
-            'type': self._type,
-            'hp': self._hp,
-            'stamina': self._stamina,
-            'special': self._special.to_dict(),
-            'effects': self._effects,
-            'channel': self._channel,
-            'targets': self.priority_to_dict(),
-            'h_status': self.get_health_status(),
-            'c_status': self.get_combat_status()
-        }
+        s = super().export()
+        s['gender'] = self._gender
+        s['level'] = self._level
+        s['channel'] = self._channel
+        s['targets'] = self.priority_to_dict()
+        s['status'] = self.get_combat_status()
+
+        return s
 
     def max_hp(self) -> int:
         return int(5 + (self._special.s + self._special.e * 3))
@@ -143,9 +129,6 @@ class Enemy(Character):
 
     def get_health_status(self) -> str:
         return str(self._h_status)
-
-    def get_name(self) -> str:
-        return self._name
 
     def is_healthy(self) -> bool:
         return self._hp == self._special.max_hp()

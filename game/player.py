@@ -2,6 +2,7 @@ import random
 
 from .character import Character
 from .enemy import Enemy
+from .enums import PlayerHealthStatus
 
 
 class Player(Character):
@@ -70,9 +71,6 @@ class Player(Character):
         # self._h_status = data.get('h_status', "")  # TODO PlayerHealthStatus("Здоров, ранен и т.д.")
         self._player_class = data.get('class', 'физ')
 
-    def max_mille_damage(self) -> int:
-        return int(self._special.s * 2 + self._special.a)
-
     def max_range_damage(self) -> int:
         return int(self._special.p * 3 + self._special.a * 2) if self._player_class == 'физ' else int(
             self._special.p * 2 + self._special.a)
@@ -91,15 +89,17 @@ class Player(Character):
     def is_dead(self) -> bool:
         return True if self._hp <= 0 else False
 
+# ======================================================================================================================
+
     def status(self) -> str:
-        if self.hp >= self._special.max_hp():
-            return 'здоров'
-        elif int(self._special.max_hp() * 4 / 5) <= self.hp:
-            return 'легкое ранение'
-        elif int(self._special.max_hp() * 2 / 5) <= self.hp < int(self._special.max_hp() * 4 / 5):
-            return 'среднее ранение'
-        elif 20 <= self.hp < int(self._special.max_hp() * 2 / 5):
-            return 'тяжелое ранение'
+        if self.hp >= self.max_hp():
+            return str(PlayerHealthStatus.HEALTH)
+        elif int(self.max_hp() * 4 / 5) <= self.hp:
+            return str(PlayerHealthStatus.DAM10)
+        elif int(self.max_hp() * 2 / 5) <= self.hp < int(self.max_hp() * 4 / 5):
+            return str(PlayerHealthStatus.DAM20)
+        elif 20 <= self.hp < int(self.max_hp() * 2 / 5):
+            return str(PlayerHealthStatus.DAM60)
         elif 0 < self.hp < 20:
             return 'критическое состояние'
         else:
@@ -112,15 +112,15 @@ class Player(Character):
             return True
 
     def heal(self, heal: int):
-        if self.hp < int(self._special.max_hp() * 4 / 5):
-            if self.hp + heal > int(self._special.max_hp() * 4 / 5):
-                self.hp = int(self._special.max_hp() * 4 / 5)
+        if self.hp < int(self.max_hp() * 4 / 5):
+            if self.hp + heal > int(self.max_hp() * 4 / 5):
+                self.hp = int(self.max_hp() * 4 / 5)
             else:
                 self.hp += heal
 
     def rest(self):
-        if self.hp < self._special.max_hp():
-            self.hp += self._special.heal_points()
+        if self.hp < self.max_hp():
+            self.hp += self._avatar.special.heal_points()
 
     def kill_enemy(self):
         if self.zombie is not None:

@@ -16,7 +16,7 @@ class Special:
         self.a = special.get('a', 1)
         self.l = special.get('l', 1)
 
-    def to_dict(self) -> dict:
+    def export(self) -> dict:
         return {
             's': self.s,
             'p': self.p,
@@ -41,9 +41,6 @@ class Special:
 
     def max_action_points(self) -> int:
         return int(self.a / 3)
-
-    def max_hp(self) -> int:
-        return int(pow(100, (1 + (self.e / 30))) / 2 + self.s)
 
     def heal_points(self) -> int:
         return int(self.e / 3)

@@ -55,6 +55,8 @@ class Game:
     def is_enemy_alive(self, id) -> bool:
         return self._enemies_table.count_documents({'_id': id}) > 0
 
+# ======================================================================================================================
+
     # def on_message(self, message: discord.Message):
     #     if message.author.bot:
     #         return

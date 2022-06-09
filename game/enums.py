@@ -24,5 +24,13 @@ class EnemyCombatStatus(Enum):
     CHASE = 'chase'
 
 
+class PlayerHealthStatus(Enum):
+    HEALTH = 'здоров'
+    DAM10 = 'легкое ранение'
+    DAM20 = 'среднее ранение'
+    DAM60 = 'тяжелое ранение'
+    DAM80 = 'критическое состояние'
+    DEAD = 'без сознания'
+
 
 
