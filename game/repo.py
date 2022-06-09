@@ -147,3 +147,11 @@ class MobAvatarRepo(Repo):
         m = self._source.find_one({'name': name})
         return None if m is None else Avatar(m)
 
+    # Выбор всех аватаров мобов
+    def select(self) -> list[Avatar]:
+        m = []
+        mobs = self._source.find({})
+        for mob in mobs:
+            m.append(Avatar(mob))
+        return m
+
