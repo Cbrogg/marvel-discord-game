@@ -114,14 +114,17 @@ class PlayerAvatarRepo(Repo):
     def __init__(self, table: Collection):
         super().__init__(table)
 
+    # Выбрать аватар по внутреннему ID
     def get_by_id(self, id: str) -> Avatar | None:
         p = self._source.find_one({'_id': id})
         return None if p is None else Avatar(p)
 
+    # Выбрать активный аватар по дискордному ID
     def get_active_by_player_id(self, id: int) -> Avatar | None:
         p = self._source.find_one({'player_id': id, 'active': True})
         return None if p is None else Avatar(p)
 
+    # Выбрать аватар по дискордному ID
     def select_by_player_id(self, id: int) -> list[Avatar] | None:
         p = []
         pls = self._source.find({'player_id': id})
@@ -134,10 +137,12 @@ class MobAvatarRepo(Repo):
     def __init__(self, table: Collection):
         super().__init__(table)
 
+    # Выбрать аватар моба по ID
     def get_by_id(self, id: str) -> Avatar | None:
         p = self._source.find_one({'_id': id})
         return None if p is None else Avatar(p)
 
+    # Выбрать аватар моба по названию
     def get_by_name(self, name: str) -> Avatar | None:
         m = self._source.find_one({'name': name})
         return None if m is None else Avatar(m)
