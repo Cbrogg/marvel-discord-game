@@ -207,7 +207,7 @@ class Player(Character):
             enemy.add_target(self._player_id)
             enemy.inc_priority(self._player_id)
             return _msg_defend_player[:-1].format(defender_name=self.get_name(),name=player2.get_name()) + _msg_change_target.format(enemy_name=enemy.get_name(),name=self.get_name())
-        
+
         else:
             return _msg_defend_not_needed
 
