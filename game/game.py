@@ -24,9 +24,9 @@ class Game:
 
     def __init__(self, db: Database):
         self._player_avatar_repo = PlayerAvatarRepo(db['characters'])
-        self._mob_avatar_repo = MobAvatarRepo(db['zombies'])
+        self._mob_avatar_repo = MobAvatarRepo(db['mobs'])
         self._player_repo = PlayerRepo(db['z_players'], self._player_avatar_repo)
-        self._mob_repo = MobRepo(db['mobs'], self._mob_avatar_repo)
+        self._mob_repo = MobRepo(db['zombies'], self._mob_avatar_repo)
 
     def exec_event(self, event: dict) -> str:
         player: Player = self._player_repo.get_by_player_id(event.get('player_id', 0))
