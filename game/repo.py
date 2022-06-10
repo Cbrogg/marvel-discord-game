@@ -44,7 +44,11 @@ class PlayerAvatarRepo(Repo):
 
     # Выбрать активный аватар по дискордному ID
     def get_active_by_player_id(self, id: int) -> Avatar | None:
-        p = self._source.find_one({'player_id': id, 'active': True})
+        p: dict = self._source.find_one({'player_id': id, 'active': True})
+        if p is None:
+            p = self._source.find_one({'player_id': id, 'archieved': False})
+            if p is not None:
+                p['active'] = True
         return None if p is None else Avatar(p)
 
     # Выбрать аватар по дискордному ID
