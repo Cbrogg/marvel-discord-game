@@ -31,7 +31,7 @@ class Priority:
         return self.value <= other.value
 
     def __eq__(self, other):
-        return self.value == other.value
+        return self.value == other.value and self.id == other.id
 
     def __str__(self):
         return f"id: {self.id}; value: {self.value}"

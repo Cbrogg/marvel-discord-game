@@ -1,9 +1,15 @@
 import random
 
 from .character import Character
+# from .player import Player
 from .enums import Gender, EnemyCombatStatus, EnemyHealthStatus
-from priority import Priority
+from .priority import Priority
 
+_msg_take_damage_male = "{} получил {} урона."
+_msg_take_damage_female = "{} получила {} урона."
+
+_msg_dead_male = " {} мертв.\n"
+_msg_dead_female = " {} мертва.\n"
 
 class Enemy(Character):
     _gender: Gender
@@ -11,7 +17,8 @@ class Enemy(Character):
     _h_status: EnemyHealthStatus
     _level: int
     _channel: int
-    _targets: list[Priority]
+    _targets: list[Priority] = []
+    # _priority_target: Player | None = None
 
     _msg_take_damage_male = "{} получил {} урона."
     _msg_take_damage_female = "{} получила {} урона."
@@ -27,10 +34,20 @@ class Enemy(Character):
         self._c_status = data.get('status', EnemyCombatStatus.IDLE)
         self.targets_from_dict(data.get('targets', {}))
 
+    # def get_priority_target(self) -> Player:
+    #     return self._priority_target
+    #
+    # def set_priority_target(self, target: Player):
+    #     self._priority_target = target
+
+    def get_reaction(self) -> int:
+        return self._avatar.special.reaction()
+
     def get_max_priority(self) -> Priority:
         return max(self._targets)
 
     def get_priority_by_id(self, id: int) -> Priority | None:
+        pr = None
         for pr in self._targets:
             if pr.id == id:
                 return pr
@@ -47,8 +64,8 @@ class Enemy(Character):
             self._targets.append(Priority(int(key), d[key]))
 
     def inc_priority(self, id=0) -> Priority:
-        self._targets.remove(self.get_priority_by_id(id))
         pr = max(self._targets)
+        self._targets.remove(self.get_priority_by_id(id))
         new_pr = Priority(id, pr.value + 1)
         self._targets.append(new_pr)
         return new_pr
@@ -60,10 +77,12 @@ class Enemy(Character):
         self._targets.append(pr)
 
     def add_target(self, id: int):
-        self._targets.append(Priority(id))
+        if self.get_priority_by_id(id) is None:
+            self._targets.append(Priority(id))
 
     def del_target(self, id: int):
-        self._targets.remove(self.get_priority_by_id(id))
+        p = self.get_priority_by_id(id)
+        self._targets.remove(p)
 
     def in_combat(self):
         self._c_status = EnemyCombatStatus.COMBAT
@@ -89,10 +108,10 @@ class Enemy(Character):
 
     def take_damage(self, damage: int) -> str:
         d = damage - self._avatar.special.e if damage > self._avatar.special.e else 0
-        msg = self._msg_take_damage_male.format(self._name, d) if self._gender == Gender.MALE else self._msg_take_damage_female.format(self._name, d)
+        msg = _msg_take_damage_male.format(self._name, d) if self._gender == Gender.MALE else _msg_take_damage_female.format(self._name, d)
         self._hp -= d
         if self._hp <= 0:
-            msg += self._msg_dead_male.format(self._name) if self._gender == Gender.MALE else self._msg_dead_female.format(self._name)
+            msg += _msg_dead_male.format(self._name) if self._gender == Gender.MALE else _msg_dead_female.format(self._name)
             self._hp = 0
             self._h_status = EnemyHealthStatus.DEAD
         else:
@@ -115,6 +134,11 @@ class Enemy(Character):
         damage = 0 if dice < 10 else max_damage * dice / 20
 
         return damage
+
+    # def deal_damage_to_priority_target(self) -> str:
+    #     msg = self._priority_target.take_damage(int(self.deal_damage()/3))
+    #     msg = msg[:-1] + "вместо {name}. \n"
+    #     return msg
 
     def is_dead(self) -> bool:
         return True if self._hp <= 0 else False

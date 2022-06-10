@@ -69,6 +69,20 @@ class Player(Character):
         # self._h_status = data.get('h_status', "")  # TODO PlayerHealthStatus("Здоров, ранен и т.д.")
         self._player_class = data.get('class', 'физ')
 
+    # Получить дискордовый ID игрока
+    def get_player_id(self) -> int:
+        return self._player_id
+
+    def get_enemy_id(self) -> str:
+        return self._enemy_id
+
+    def set_effect(self, key: str):
+        self._effects[key] = True
+
+    def remove_effect(self, key):
+        self._effects.pop(key)
+
+    # Максимальный урон дальней атаки
     def max_range_damage(self) -> int:
         return int(self._avatar.special.p * 3 + self._avatar.special.a * 2) if self._player_class == 'физ' else int(
             self._avatar.special.p * 2 + self._avatar.special.a)
@@ -76,19 +90,24 @@ class Player(Character):
     def max_magic_damage(self) -> int:
         return 0 if self._player_class != 'маг' else int(self._avatar.special.p * 2 + self._avatar.special.i * 2)
 
-    def take_damage(self, damage: int) -> int:
+    # Получение урона игроком
+    def take_damage(self, damage: int) -> str:  # TODO
         d = damage - self._avatar.special.e if damage > self._avatar.special.e else 0
-        if self.hp - d < 0:
-            self.hp = 0
+        msg = _msg_self_get_damage.format(damage=d)
+        self._hp -= d
+        if self._hp <= 0:
+            msg += _msg_fall.format(name='Вы')
+            self._hp = 0
         else:
-            self.hp -= d
-        return d
+            msg += '\n'
 
+        return msg
+
+    # Проверка игрока на жизнедеятельность
     def is_dead(self) -> bool:
         return True if self._hp <= 0 else False
 
-# ======================================================================================================================
-
+    # Проверка, если ли враг у игрока
     def has_enemy(self) -> bool:
         if self._enemy is None:
             return False
@@ -114,7 +133,9 @@ class Player(Character):
     def set_enemy(self, e: Enemy):
         self._e_status = 'замечен'
         self._enemy = e
+        self._enemy.add_target(self._player_id)
 
+    # Расчёт шансов на побег
     def get_chase_escape_chance(self) -> int:
         if not self.has_enemy():
             return 100
@@ -197,71 +218,173 @@ class Player(Character):
                 self._enemy.del_target(self._player_id)
                 self.set_enemy(enemy)
                 enemy.inc_priority(self._player_id)
-                return _msg_defend_player[:-1].format(defender_name=self.get_name(),name=player2.get_name()) + _msg_change_target.format(enemy_name=enemy.get_name(),name=self.get_name())
+                return _msg_defend_player[:-1].format(defender_name=self.get_name(), name=player2.get_name()) + " " + _msg_take_target.format(enemy_name=enemy.get_name(), name=self.get_name())
             else:
                 self._enemy.inc_priority(self._player_id)
-                return _msg_defend_player[:-1].format(defender_name=self.get_name(),name=player2.get_name()) + _msg_change_target.format(enemy_name=enemy.get_name(),name=self.get_name())
+                return _msg_defend_player[:-1].format(defender_name=self.get_name(), name=player2.get_name()) + " " + _msg_take_target.format(enemy_name=enemy.get_name(), name=self.get_name())
 
         elif enemy is not None:
             self.set_enemy(enemy)
-            enemy.add_target(self._player_id)
             enemy.inc_priority(self._player_id)
-            return _msg_defend_player[:-1].format(defender_name=self.get_name(),name=player2.get_name()) + _msg_change_target.format(enemy_name=enemy.get_name(),name=self.get_name())
+            return _msg_defend_player[:-1].format(defender_name=self.get_name(), name=player2.get_name()) + " " +_msg_take_target.format(enemy_name=enemy.get_name(), name=self.get_name())
 
         else:
             return _msg_defend_not_needed
 
+    # Побег
+    def run_away_action(self) -> str:
+        if self.has_enemy():
+            e = self._enemy.get_type
+            escape = random.randint(0, 100)
+            if escape <= 80:
+                self._effects['escaped'] = True
+                self._enemy.del_target(self._player_id)
+                self.drop_enemy()
+                msg = _msg_run_away.format(name=e)
+                if random.randint(0, 100) <= 75:
+                    msg += _msg_get_invis.format(type=e)
+                    self._e_status = 'не замечен'
+                    return msg
+            else:
+                self._effects['not_escaped'] = True
+                damage = self._enemy.deal_damage()
+                return _msg_not_run + _msg_self_get_damage.format(damage=damage)
+        else:
+            e = self._enemy.get_type
+            if self._e_status == 'замечен':
+                escape = random.randint(0, 100)
+                if escape <= 75:
+                    self._e_status = 'не замечен'
+                    return _msg_get_invis.format(type=e)
+
+    # Помощь
+    def help_action(self, player2: Character | None = None, enemy: Enemy | None = None) -> str:
+        if self.has_enemy():
+            return _msg_cant_help
+        else:
+            if player2 is None or enemy is None:
+                return _msg_help_not_needed
+            else:
+                enemy.add_target(self._player_id)
+                self.set_enemy(enemy)
+                self._e_status = 'замечен'
+                if self._avatar.avatar_class == 'маг':
+                    self._effects['magic_attack'] = True
+                else:
+                    self._effects['range_attack'] = True
+                return _msg_help.format(helper_name=self.get_name(), name=player2.get_name())
+
+    # Атака
+    def attack_action(self):
+        msg = ""
+        if self._effects['mille_attack']:
+            if not self.is_priority_target():
+                self._enemy.inc_priority(self._player_id)
+                msg += _msg_take_target.format(enemy_name=self._enemy.get_name(), name=self._name)
+            max_damage = self.max_mille_damage()
+
+        elif self._effects['magic_attack']:
+            max_damage = self.max_range_damage()
+
+        elif self._effects['range_attack']:
+            max_damage = self.max_magic_damage()
+
+        else:
+            return
+
+        crit_m = 2
+
+        if self._effects['dodged']:
+            max_damage = int(max_damage / 2)
+            crit_m = 4
+
+        hit = random.randint(1, 20)
+        damage_player = max_damage * crit_m if hit == 20 else int(max_damage * (hit / 20)) if hit > 1 else 0
+
+        damage = self._enemy.deal_damage()
+
+        if self.is_priority_target():
+            if self._effects['defending']:
+                damage = int(damage / 2)
+                msg += self.take_damage(damage)
+                if not self.is_dead():
+                    msg += self._enemy.take_damage(damage_player)
+                    if self._enemy.is_dead():
+                        self.kill_enemy()
+            else:
+                if self._avatar.special.reaction() > self._enemy.get_reaction():
+                    msg += self._enemy.take_damage(damage_player)
+                    if self._enemy.is_dead():
+                        self.kill_enemy()
+                    else:
+                        if self._effects['dodged']:
+                            dodged = random.randint(1, 100) <= self.get_chase_escape_chance()
+                            if not dodged:
+                                msg += _msg_not_dodge
+                                msg += self.take_damage(damage)
+                            else:
+                                msg += _msg_dodge
+                        else:
+                            msg += self.take_damage(damage)
+                else:
+                    if self._effects['dodged']:
+                        dodged = random.randint(1, 100) <= self.get_chase_escape_chance()
+                        if not dodged:
+                            msg += self.take_damage(damage)
+                            if self.is_dead():
+                                msg += _msg_fall.format(name=self._name)
+                            else:
+                                msg += self._enemy.take_damage(damage_player)
+                                if self._enemy.is_dead():
+                                    msg += _msg_kill.format(name=self._enemy.get_name())
+                                    self.kill_enemy()
+                        else:
+                            msg += _msg_dodge
+                            msg += self._enemy.take_damage(damage_player)
+                            if self._enemy.is_dead():
+                                self.kill_enemy()
+                    else:
+                        msg += self.take_damage(damage)
+                        if self.is_dead():
+                            msg += _msg_fall.format(name='Вы')
+                        else:
+                            msg += self._enemy.take_damage(damage_player)
+                            if self._enemy.is_dead():
+                                self.kill_enemy()
+            if self.is_dead():
+                self._e_status = 'не замечен'
+                msg += _msg_lost_interest.format(name=self._enemy.get_type())
+        else:
+            msg += self._enemy.deal_damage_to_priority_target().format(name=self._name)
+            msg += self._enemy.take_damage(damage_player)
+            if self._enemy.is_dead():
+                self.kill_enemy()
+
+        return msg
+
+    def idle_action(self) -> str:
+        msg = ""
+        if self.has_enemy() and self.is_priority_target():
+            damage = self._enemy.deal_damage()
+            if self._effects['defending']:
+                damage = int(damage / 2)
+                msg += self.take_damage(damage)
+
+            elif self._effects['dodged']:
+                dodged = random.randint(1, 100) <= self.get_chase_escape_chance()
+                if not dodged:
+                    msg += _msg_not_dodge
+                    msg += self.take_damage(damage)
+                else:
+                    msg += _msg_dodge
+            else:
+                msg += self.take_damage(damage)
+        return msg
+
     # def on_message(self, message: discord.Message):
     #
-    #     if actions['!убегает']:
-    #         if player.has_enemy():
-    #             async with message.channel.typing():
-    #                 escape = random.randint(0, 100)
-    #                 embed.add_field(name="!убегает", value=f"result = {escape}")
-    #                 if escape <= 80:
-    #                     # player.zombie.heal()
     #
-    #                     self.save_zombie(player.zombie)
-    #                     player.drop_enemy()
-    #                     msg += f"Вы убежали от зомби.\n"
-    #                     if random.randint(0, 100) <= 75:
-    #                         msg += "Зомби потеряли вас из виду.\n"
-    #                         player.z_status = 'не замечен'
-    #                     self.save_player(player)
-    #                 else:
-    #                     damage = random.randint(1, 20)
-    #                     player.take_damage(damage)
-    #                     self.save_player(player)
     #
-    #                     msg += f"Убежать не вышло. {player.zombie.name} нанес удар на {damage} единиц\n"
-    #         else:
-    #             if player.z_status == 'замечен':
-    #                 escape = random.randint(0, 100)
-    #                 embed.add_field(name="!убегает", value=f"result = {escape}")
-    #                 if escape <= 75:
-    #                     msg += "Зомби потеряли вас из виду.\n"
-    #                     player.z_status = 'не замечен'
-    #                     self.save_player(player)
-    #
-    #     if actions['!помогает']:
-    #         if player.has_enemy():
-    #             msg += f"Нет возможности помочь, вас атакуют.\n"
-    #         else:
-    #             player2: Character = self.get_character_by_player_id(utils.get_user_from_message(message).id)
-    #             player2.zombie = self.get_zombie(player2.zombie_id)
-    #             if player2 is None or not player2.has_enemy():
-    #                 msg += f"Ваша помощь не требуется.\n"
-    #             else:
-    #                 player.set_enemy(player2.zombie)
-    #                 player2.zombie.add_target(str(player.player_id))
-    #                 player.z_status = 'замечен'
-    #                 if player.p_class == 'маг':
-    #                     actions['!колдует'] = True
-    #                 else:
-    #                     actions['!стреляет'] = True
-    #                 self.save_player(player)
-    #                 self.save_zombie(player.zombie)
-    #                 msg += f"Вы помогаете персонажу {player2.name}.\n"
     #
     #     if not player.has_enemy():
     #         if self.is_channel_clean(message.channel.id):
@@ -349,185 +472,3 @@ class Player(Character):
     #                             msg += f"Текущий статус персонажа {player.name}: {player.status()}."
     #                             await message.channel.send(msg, reference=message)
     #                             return
-    #
-    #     if actions['!атакует'] or actions['!стреляет'] or actions['!колдует']:
-    #         async with message.channel.typing():
-    #             if not player.has_enemy():
-    #                 if self.is_channel_clean(message.channel.id):
-    #                     msg += "Нет цели для атаки.\n"
-    #                 else:
-    #                     z = self.get_any_zombie(message.channel.id)
-    #                     player.set_enemy(z)
-    #                     z.add_target(str(player.player_id))
-    #                     embed.add_field(name="zombie", value=f"id = {z.id}")
-    #                     player.z_status = 'замечен'
-    #                     player.zombie.in_combat()
-    #                     self.save_player(player)
-    #                     self.save_zombie(z)
-    #
-    #             crit_m = 2
-    #
-    #             if actions['!атакует']:
-    #                 if not player.is_priority_target():
-    #                     player.zombie.inc_priority(str(player.player_id))
-    #                     msg += f"{player.zombie.name} сосредоточил внимание на {player.name}.\n"
-    #                 max_damage = player.max_mille_damage()
-    #
-    #             if actions['!стреляет']:
-    #                 max_damage = player.max_range_damage()
-    #
-    #             if actions['!колдует']:
-    #                 max_damage = player.max_magic_damage()
-    #
-    #             if actions['!уклон']:
-    #                 max_damage = int(max_damage / 2)
-    #                 crit_m = 4
-    #
-    #             hit = random.randint(1, 20)
-    #             z_hit = random.randint(1, 20)
-    #             damage_player = max_damage * crit_m if hit == 20 else int(max_damage * (hit / 20)) if hit > 1 else 0
-    #
-    #             damage = player.zombie.max_damage() * 2 if hit == 1 else int(player.zombie.max_damage() * z_hit / 20)
-    #
-    #             if player.is_priority_target():
-    #                 if actions['!защищает']:
-    #                     damage = int(damage / 2)
-    #                     msg += f'Вы получили {player.take_damage(damage)} урона.\n'
-    #                     if player.is_dead():
-    #                         msg += f"{player.name} без сознания.\n"
-    #                     else:
-    #                         msg += f'{player.zombie.name} получил {player.zombie.take_damage(damage_player)} урона.\n'
-    #                         if player.zombie.is_dead():
-    #                             msg += f'{player.zombie.name} убит.\n'
-    #                             self.kill_zombie(player.zombie)
-    #                             player.kill_enemy()
-    #                 else:
-    #                     if player.reaction() > player.zombie.reaction():
-    #                         msg += f'{player.zombie.name} получил {player.zombie.take_damage(damage_player)} урона.\n'
-    #                         if player.zombie.is_dead():
-    #                             msg += f'{player.zombie.name} убит.\n'
-    #                             self.kill_zombie(player.zombie)
-    #                             player.kill_enemy()
-    #                         else:
-    #                             if actions['!уклон']:
-    #                                 msg += 'Вы '
-    #                                 dodged = random.randint(1, 100) <= player.get_chase_escape_chance()
-    #                                 if not dodged:
-    #                                     msg += f'не смогли уклониться и получили {player.take_damage(damage)} урона.\n'
-    #                                     if player.is_dead():
-    #                                         msg += f"{player.name} без сознания.\n"
-    #                                 else:
-    #                                     msg += f'смогли уклониться и получили 0 урона.\n'
-    #                             else:
-    #                                 msg += f'Вы получили {player.take_damage(damage)} урона.\n'
-    #                                 if player.is_dead():
-    #                                     msg += f"{player.name} без сознания.\n"
-    #                     else:
-    #                         if actions['!уклон']:
-    #                             msg += 'Вы '
-    #                             dodged = random.randint(1, 100) <= player.get_chase_escape_chance()
-    #                             if not dodged:
-    #                                 msg += f'не смогли уклониться и получили {player.take_damage(damage)} урона.\n'
-    #                                 if player.is_dead():
-    #                                     msg += f"{player.name} без сознания.\n"
-    #                                 else:
-    #                                     msg += f'{player.zombie.name} получил {player.zombie.take_damage(damage_player)} урона.\n'
-    #                                     if player.zombie.is_dead():
-    #                                         msg += f'{player.zombie.name} убит.\n'
-    #                                         self.kill_zombie(player.zombie)
-    #                                         player.kill_enemy()
-    #
-    #                             else:
-    #                                 msg += f'смогли уклониться и получили 0 урона.\n'
-    #                                 msg += f'{player.zombie.name} получил {player.zombie.take_damage(damage_player)} урона.\n'
-    #                                 if player.zombie.is_dead():
-    #                                     msg += f'{player.zombie.name} убит.\n'
-    #                                     self.kill_zombie(player.zombie)
-    #                                     player.kill_enemy()
-    #                         else:
-    #                             msg += f'Вы получили {player.take_damage(damage)} урона.\n'
-    #                             if player.is_dead():
-    #                                 msg += f"{player.name} без сознания.\n"
-    #                             else:
-    #                                 msg += f'{player.zombie.name} получил {player.zombie.take_damage(damage_player)} урона.\n'
-    #                                 if player.zombie.is_dead():
-    #                                     msg += f'{player.zombie.name} убит.\n'
-    #                                     self.kill_zombie(player.zombie)
-    #                                     player.kill_enemy()
-    #                 if player.is_dead():
-    #                     player.z_status = 'не замечен'
-    #                     msg += "Зомби потеряли к вам интерес.\n"
-    #                 else:
-    #                     if player.z_status == 'не замечен':
-    #                         if not self.is_channel_clean(message.channel.id):
-    #                             msg += "Зомби потеряли вас из виду.\n"
-    #                         else:
-    #                             msg += f"Локация зачищена.\n"
-    #                     else:
-    #                         if not self.is_channel_clean(message.channel.id):
-    #                             if not player.has_enemy():
-    #                                 msg += f"К вам движется {player.zombie.name}.\n"
-    #                         else:
-    #                             msg += f"Локация зачищена.\n"
-    #                 self.save_player(player)
-    #                 if player.has_enemy():
-    #                     self.save_zombie(player.zombie)
-    #             else:
-    #                 player2_id = player.zombie.get_priority_target_id()
-    #                 player2 = self.get_character_by_player_id(int(player2_id))
-    #                 player.zombie.take_damage(damage_player)
-    #                 msg += f'{player.zombie.name} получил {player.zombie.take_damage(damage_player)} урона.\n'
-    #                 if player.zombie.is_dead():
-    #                     msg += f'{player.zombie.name} убит.\n'
-    #                     self.kill_zombie(player.zombie)
-    #                     player.kill_enemy()
-    #                 else:
-    #                     msg += f'{player2.name} получил вместо {player.name} {player2.take_damage(int(damage / 3))} урона.\n'
-    #                     if player2.is_dead():
-    #                         msg += f"{player2.name} без сознания.\n"
-    #                         player2.drop_enemy()
-    #                         player2.z_status = 'не замечен'
-    #                         player.zombie.del_target(player2.id)
-    #
-    #                 self.save_player(player)
-    #                 self.save_player(player2)
-    #                 if player.has_enemy():
-    #                     self.save_zombie(player.zombie)
-    #     else:
-    #         if player.has_enemy():
-    #             if player.zombie.status == 'в бою':
-    #                 async with message.channel.typing():
-    #                     if player.is_priority_target():
-    #                         z_hit = random.randint(1, 20)
-    #                         damage = player.zombie.max_damage() * 2 if z_hit == 20 else int(
-    #                             player.zombie.max_damage() * z_hit / 20)
-    #
-    #                         if actions['!защищает']:
-    #                             damage = int(damage / 2)
-    #                             msg += f'Вы получили {player.take_damage(damage)} урона.\n'
-    #                             if player.is_dead():
-    #                                 msg += f"{player.name} без сознания.\n"
-    #
-    #                         if actions['!уклон']:
-    #                             msg += 'Вы '
-    #                             dodged = random.randint(1, 100) <= player.get_chase_escape_chance()
-    #                             if not dodged:
-    #                                 player.take_damage(damage)
-    #                                 msg += f'не смогли уклониться и получили {damage} урона.\n'
-    #                                 if player.is_dead():
-    #                                     msg += f"{player.name} без сознания.\n"
-    #                             else:
-    #                                 msg += f'смогли уклониться и получили 0 урона.\n'
-    #
-    #                             self.save_player(player)
-    #                             self.save_zombie(player.zombie)
-    #                             embed.add_field(name="не !атакует", value=f"damage = {0 if dodged else damage}")
-    #
-    #     embed.set_footer(text=f"{player.name}: {player.status()}({player.hp}/{player.max_hp()}), {player.z_status}")
-    #     await self.log.send(embed=embed)
-    #
-    #     if msg == "":
-    #         return
-    #     async with message.channel.typing():
-    #         msg += f"Текущий статус персонажа {player.name}: {player.status()}."
-    #         await message.channel.send(msg, reference=message)

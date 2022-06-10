@@ -1,59 +1,85 @@
-import random
-
 from pymongo.database import Database
-from .character import Character
-from .enemy import Enemy
+from .repo import *
+from .location import Location
+
+# Ошибки сообщения игрока
+_msg_dead_player = "{mention}, вы без сознания и не можете реагировать на происходящее пока вас не вылечили"
+_msg_more_actions = "{mention}, вы не можете использовать более одного атакующего действия за пост."
+_msg_more_defs = "{mention}, вы не можете использовать более одного оборонительно действия за пост."
+
+# Ошибки обработки сообщения
+_msg_no_id = "В событии нет ID персонажа"
+_msg_no_action = "В событии нет ни одного действия"
+
+# Ошибки управления игрой
+_msg_player_not_find = "Персонажа нет в игре"
+_msg_player_in_game = "Персонаж уже в игре"
 
 
 class Game:
+    _player_repo: PlayerRepo
+    _mob_repo: MobRepo
+    _player_avatar_repo: PlayerAvatarRepo
+    _mob_avatar_repo: MobAvatarRepo
+
     def __init__(self, db: Database):
-        self.db = db
-        self._characters_table = self.db['characters']
-        self._enemies_table = self.db["enemies"]
-        self._players_table = self.db["z_players"]
-        self._mobs_table = self.db["mobs"]
+        self._player_avatar_repo = PlayerAvatarRepo(db['characters'])
+        self._mob_avatar_repo = MobAvatarRepo(db['mobs'])
+        self._player_repo = PlayerRepo(db['z_players'], self._player_avatar_repo)
+        self._mob_repo = MobRepo(db['mobs'], self._mob_avatar_repo)
 
-    def get_character_by_player_id(self, id) -> Character | None:
-        c = self._characters_table.find_one({'player_id': id, 'archived': False})
-        if c is None:
-            return None
-        p = self._players_table.find_one({'player_id': id})
-        if p is None:
-            return None
-        return Character(p, c)
+    def exec_event(self, event: dict) -> str:
+        player: Player = self._player_repo.get_by_player_id(event.get('player_id', 0))
+        enemy: Enemy = self._mob_repo.get_by_id(player.get_enemy_id())
+        player.set_enemy(enemy)
+        if player is None:
+            return _msg_no_id
+        actions = event.get('actions', None)
+        if actions is None:
+            return _msg_no_action
 
-    def get_mob_list(self, channel: int) -> dict:
+        msg = ""
 
-        data = self._enemies_table.find({'channel': channel})
+        if len(actions) == 0 and player.has_enemy():
+            msg += player.idle_action()
+            return msg
 
-        types = {}
+        if actions.get('!осмотр', False):
+            msg += player.look_around_action(Location(event.get('channel_id', 0), self._mob_repo.select(event.get('channel_id', 0))))
 
-        for enemy in data:
-            count = types.get(enemy['name'], 0)
-            count += 1
-            types[enemy['name']] = count
+        if actions.get('!лечит', False):
+            msg += player.heal_action(self._player_repo.get_by_player_id(event.get('player2_id', 0)))
 
-        return types
+        if actions.get('!защищает', False):
+            player2 = self._player_repo.get_by_player_id(event.get('player2_id', 0))
+            enemy2 = self._mob_repo.get_by_id(player2.get_enemy_id())
+            msg += player.defend_action(player2, enemy2)
 
-    def get_enemy_by_id(self, id) -> Enemy | None:
-        if id == "":
-            return None
-        z: dict = self._enemies_table.find_one({'_id': id})
-        if z is None:
-            return None
-        return Enemy(z)
+        if actions.get('!помогает', False):
+            player2 = self._player_repo.get_by_player_id(event.get('player2_id', 0))
+            enemy2 = self._mob_repo.get_by_id(player2.get_enemy_id())
+            msg += player.help_action(player2, enemy2)
 
-    def kill_enemy(self, e: Enemy):
-        self._enemies_table.delete_one({'_id': e.get_id()})
+        if actions.get('!убегает', False):
+            msg += player.run_away_action()
 
-    def save_player(self, pl: Character):
-        self._players_table.update_one({'_id': pl.get_id()}, {'$set': pl.export()})
+        if actions.get('!уклон', False):
+            player.set_effect('dodged')
 
-    def save_enemy(self, e: Character):
-        self._enemies_table.update_one({'_id': e.get_id()}, {'$set': e.export()})
+        if actions.get('!атакует', False):
+            player.set_effect('mille_attack')
+            player.attack_action()
 
-    def is_enemy_alive(self, id) -> bool:
-        return self._enemies_table.count_documents({'_id': id}) > 0
+        if actions.get('!стреляет', False):
+            player.set_effect('range_attack')
+            player.attack_action()
+
+        if actions.get('!колдует', False):
+            player.set_effect('magic_attack')
+            player.attack_action()
+
+        return msg
+
 
 # ======================================================================================================================
 

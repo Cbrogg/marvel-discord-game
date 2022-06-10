@@ -33,9 +33,60 @@ class Repo:
         return self._source.find({})
 
 
-class PlayerRepo(Repo):
+class PlayerAvatarRepo(Repo):
     def __init__(self, table: Collection):
         super().__init__(table)
+
+    # Выбрать аватар по внутреннему ID
+    def get_by_id(self, id: str) -> Avatar | None:
+        p = self._source.find_one({'_id': id})
+        return None if p is None else Avatar(p)
+
+    # Выбрать активный аватар по дискордному ID
+    def get_active_by_player_id(self, id: int) -> Avatar | None:
+        p = self._source.find_one({'player_id': id, 'active': True})
+        return None if p is None else Avatar(p)
+
+    # Выбрать аватар по дискордному ID
+    def select_by_player_id(self, id: int) -> list[Avatar] | None:
+        p = []
+        pls = self._source.find({'player_id': id})
+        for pl in pls:
+            p.append(Avatar(pl))
+        return p
+
+
+class MobAvatarRepo(Repo):
+    def __init__(self, table: Collection):
+        super().__init__(table)
+
+    # Выбрать аватар моба по ID
+    def get_by_id(self, id: str) -> Avatar | None:
+        if id == "":
+            return None
+        p = self._source.find_one({'_id': id})
+        return None if p is None else Avatar(p)
+
+    # Выбрать аватар моба по названию
+    def get_by_name(self, name: str) -> Avatar | None:
+        m = self._source.find_one({'name': name})
+        return None if m is None else Avatar(m)
+
+    # Выбор всех аватаров мобов
+    def select(self) -> list[Avatar]:
+        m = []
+        mobs = self._source.find({})
+        for mob in mobs:
+            m.append(Avatar(mob))
+        return m
+
+
+class PlayerRepo(Repo):
+    _avatar_repo: PlayerAvatarRepo
+
+    def __init__(self, table: Collection, avatars: PlayerAvatarRepo):
+        super().__init__(table)
+        self._avatar_repo = avatars
 
     # Выбор всех игроков
     def select(self) -> list[Player]:
@@ -52,21 +103,39 @@ class PlayerRepo(Repo):
 
     # Выбор игрока по дискордному ID
     def get_by_player_id(self, id: int) -> Player | None:
-        p = self._source.find_one({'player_id': id})
-        return None if p is None else Player(p)
+        if id == 0:
+            return None
+        p: dict = self._source.find_one({'player_id': id})
+        if p is None:
+            return None
+        player = Player(p)
+        player.set_avatar(self._avatar_repo.get_active_by_player_id(id))
+        return player
 
 
 class MobRepo(Repo):
-    def __init__(self, table: Collection):
+    _avatar_repo: MobAvatarRepo
+
+    def __init__(self, table: Collection, avatars: MobAvatarRepo):
         super().__init__(table)
+        self._avatar_repo = avatars
 
     # Выбор врага по ID
     def get_by_id(self, id: str) -> Enemy | None:
-        p = self._source.find_one({'_id': id})
-        return None if p is None else Enemy(p)
+        if id == "":
+            return None
+        p: dict = self._source.find_one({'_id': id})
+        if p is None:
+            return None
+        avatar = self._avatar_repo.get_by_id(p.get('avatar_id', ""))
+        mob = Enemy(p)
+        mob.set_avatar(avatar)
+        return mob
 
     # Выбор врагов. Возможен выбор врагов в определённом канале
-    def select(self, channel: int | None = None) -> list[Enemy]:
+    def select(self, channel: int | None = None) -> list[Enemy] | None:
+        if channel == 0:
+            return None
         e = []
         if channel is None:
             enms = self._source.find({})
@@ -108,50 +177,3 @@ class MobRepo(Repo):
             except ValueError:
                 names.append(enemy.get_name())
         return names
-
-
-class PlayerAvatarRepo(Repo):
-    def __init__(self, table: Collection):
-        super().__init__(table)
-
-    # Выбрать аватар по внутреннему ID
-    def get_by_id(self, id: str) -> Avatar | None:
-        p = self._source.find_one({'_id': id})
-        return None if p is None else Avatar(p)
-
-    # Выбрать активный аватар по дискордному ID
-    def get_active_by_player_id(self, id: int) -> Avatar | None:
-        p = self._source.find_one({'player_id': id, 'active': True})
-        return None if p is None else Avatar(p)
-
-    # Выбрать аватар по дискордному ID
-    def select_by_player_id(self, id: int) -> list[Avatar] | None:
-        p = []
-        pls = self._source.find({'player_id': id})
-        for pl in pls:
-            p.append(Avatar(pl))
-        return p
-
-
-class MobAvatarRepo(Repo):
-    def __init__(self, table: Collection):
-        super().__init__(table)
-
-    # Выбрать аватар моба по ID
-    def get_by_id(self, id: str) -> Avatar | None:
-        p = self._source.find_one({'_id': id})
-        return None if p is None else Avatar(p)
-
-    # Выбрать аватар моба по названию
-    def get_by_name(self, name: str) -> Avatar | None:
-        m = self._source.find_one({'name': name})
-        return None if m is None else Avatar(m)
-
-    # Выбор всех аватаров мобов
-    def select(self) -> list[Avatar]:
-        m = []
-        mobs = self._source.find({})
-        for mob in mobs:
-            m.append(Avatar(mob))
-        return m
-

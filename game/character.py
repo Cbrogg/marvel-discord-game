@@ -18,7 +18,7 @@ class Avatar:
         self._name = data.get('name', 'empty')
         self.avatar_class = data.get('class', 'empty')
         self.player_id = data.get('player_id', 0)
-        self.special = Special(data['special'])
+        self.special = Special(data.get('special', {}))
         self.skills = data.get('skills', {})
         self.active = data.get('active', True)
 

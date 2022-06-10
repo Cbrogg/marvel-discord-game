@@ -8,11 +8,13 @@ _msg_hear_enemy = "В округе слышны {type}.\n"
 
 
 class Location:
-    _id: int
-    _mobs: dict
+    _id: int = 0
+    _mobs: dict = {}
 
-    def __init__(self, id: int, mob_list: list[Enemy]):
+    def __init__(self, id: int = 0, mob_list: list[Enemy] | None = None):
         self._id = id
+        if mob_list is None:
+            pass
         for mob in mob_list:
             mobs = self._mobs.get(mob.get_name(), [])
             if len(mobs) == 0:
@@ -21,6 +23,8 @@ class Location:
                 self._mobs[mob.get_name()].append(mob)
 
     def get_max_detection(self) -> int:
+        if len(self._mobs) == 0:
+            return 0
         d = [int]
         for name in self._mobs.keys():
             d.append(self._mobs[name][0].special.detection())
@@ -31,6 +35,9 @@ class Location:
         return len(self._mobs) == 0
 
     def get_any_mob(self) -> Enemy | None:
+        if self.is_clean():
+            return None
+
         mob = None
 
         name = self._mobs.keys()[random.randint(0, len(self._mobs))]
@@ -68,5 +75,3 @@ class Location:
                 return _msg_count_enemy.format(count=c, type=self.get_any_mob().get_type())
             elif r < 10:
                 return _msg_hear_enemy.format(type=self.get_any_mob().get_type())
-
-# channel = Location(channel_id, self.mob_table.find({'channel': channel_id}))
