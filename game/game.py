@@ -24,7 +24,7 @@ class Game:
 
     def __init__(self, db: Database):
         self._player_avatar_repo = PlayerAvatarRepo(db['characters'])
-        self._mob_avatar_repo = MobAvatarRepo(db['mobs'])
+        self._mob_avatar_repo = MobAvatarRepo(db['zombies'])
         self._player_repo = PlayerRepo(db['z_players'], self._player_avatar_repo)
         self._mob_repo = MobRepo(db['mobs'], self._mob_avatar_repo)
 
