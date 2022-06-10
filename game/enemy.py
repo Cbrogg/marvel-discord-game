@@ -20,11 +20,7 @@ class Enemy(Character):
     _targets: list[Priority] = []
     # _priority_target: Player | None = None
 
-    _msg_take_damage_male = "{} получил {} урона."
-    _msg_take_damage_female = "{} получила {} урона."
 
-    _msg_dead_male = " {} мертв.\n"
-    _msg_dead_female = " {} мертва.\n"
 
     def __init__(self, data: dict, ch_id=None):
         super().__init__(data)

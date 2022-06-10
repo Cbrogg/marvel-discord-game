@@ -7,8 +7,6 @@ from .location import Location
 
 # Проверки
 _msg_dead_player = "{mention}, вы без сознания и не можете реагировать на происходящее пока вас не вылечили"
-_msg_more_actions = "{mention}, вы не можете использовать более одного атакующего действия за пост."
-_msg_more_defs = "{mention}, вы не можете использовать более одного оборонительно действия за пост."
 _msg_helped = "Вам помогли избавиться от {type_r}.\n"
 _msg_dont_look = "Вам некогда осматриваться по сторонам.\n"
 _msg_need_rest = "Персонаж {name} максимально вылечен. Теперь ему нужен отдых.\n"
@@ -22,6 +20,7 @@ _msg_caught = "Вас догнал {name}!\n"
 _msg_attacked = "Вас атакует {name}!\n"
 _msg_followed = "К вам движется {name}.\n"
 _msg_no_target = "Нет цели для атаки.\n"
+_msg_lost_interest = "{name} потеряли к вам интерес.\n"
 
 # Лечение
 _msg_max_healed = "Вы максимально вылечили {name}. Теперь ему нужен отдых.\n"
@@ -39,7 +38,7 @@ _msg_attack = "Вы атаковали {name_r}.\n"
 
 # Защита, помощь и внимание
 _msg_defend_player = "{defender_name} защищает {name}.\n"
-_msg_change_target = "{enemy_name} переключил внимание на {name}.\n"
+_msg_take_target = "{enemy_name} сосредоточил внимание на {name}.\n"
 _msg_help = "{helper_name} помогает {name}.\n"
 
 # Получение урона и текущий статус
@@ -87,6 +86,7 @@ class Player(Character):
         return int(self._avatar.special.p * 3 + self._avatar.special.a * 2) if self._player_class == 'физ' else int(
             self._avatar.special.p * 2 + self._avatar.special.a)
 
+    # Максимальный урон магической атаки
     def max_magic_damage(self) -> int:
         return 0 if self._player_class != 'маг' else int(self._avatar.special.p * 2 + self._avatar.special.i * 2)
 
@@ -114,10 +114,12 @@ class Player(Character):
         else:
             return True
 
+    # Пассивный отхил игрока
     def rest(self):
-        if self.hp < self.max_hp():
-            self.hp += self._avatar.special.heal_points()
+        if self._hp < self.max_hp():
+            self._hp += self._avatar.special.heal_points()
 
+    # Убийство моба игроком
     def kill_enemy(self):
         if self._enemy is not None:
             self._enemy = None
@@ -125,12 +127,16 @@ class Player(Character):
             self._kills += 1
             self._e_status = 'не замечен' if random.randint(0, 100) > 50 else 'замечен'
 
+    # Удаление моба из врагов игрока. Сброс противника
     def drop_enemy(self):
         if self._enemy is not None:
             self._enemy = None
             self._enemy_id = ""
 
-    def set_enemy(self, e: Enemy):
+    # Привязка моба к игроку
+    def set_enemy(self, e: Enemy | None):
+        if e is None:
+            return
         self._e_status = 'замечен'
         self._enemy = e
         self._enemy.add_target(self._player_id)
@@ -142,36 +148,42 @@ class Player(Character):
         else:
             return int(50 * (self._avatar.special.reaction() / self._enemy._avatar.special.reaction()))
 
+    # Проверка, является ли игрок приоритетной целью
     def is_priority_target(self) -> bool:
         if self._enemy is not None:
             return str(self._player_id) == self._enemy_id.get_priority_target_id()
         else:
             return False
 
+    # Расчёт шансов игрока обнаружить моба
     def detect_chance(self, enemy_stealth: int = 0) -> int:
         if enemy_stealth == 0:
             return 0
         else:
             return int(30 * (self._avatar.special.detection() / enemy_stealth))
 
+    # Расчёт шансов игрока быть незамеченным мобом
     def stealth_chance(self, enemy_detection: int = 0) -> int:
         if enemy_detection == 0:
             return 100
         else:
             return int(30 * (enemy_detection / self._avatar.special.stealth()))
 
+    # Узнать статус врага
     def get_enemy_status(self) -> str:
         if self._enemy is not None:
             return self._enemy.get_combat_status()
         else:
             return "нет"
 
+    # Жив ли игрок
     def is_alive(self) -> str:
         if self._hp <= 0:
             return _msg_dead_player.format(mention=f"<@{self._player_id}>")
         else:
             return ""
 
+    # Осмотр
     def look_around_action(self, location: Location) -> str:
         if self.has_enemy():
             return _msg_dont_look
@@ -181,6 +193,7 @@ class Player(Character):
 
         return msg
 
+    # Лечение
     def heal_action(self, player2: Character | None = None):
         msg = ""
         if player2 is not None:
@@ -193,7 +206,7 @@ class Player(Character):
                     msg += _msg_max_healed.format(name=player2.get_name())
                 else:
                     player2.heal(healing)
-                    msg += _msg_healed[:-1].format(name=player2.get_name()) + _msg_stat.format(name=player2.get_name(),status=player2.status())
+                    msg += _msg_healed[:-1].format(name=player2.get_name()) + _msg_stat.format(name=player2.get_name(), status=player2.status())
         else:
             if not self.is_healable():
                 msg += _msg_self_need_rest
@@ -205,8 +218,9 @@ class Player(Character):
                 else:
                     healing = int(healing / 2)
                     self.heal(healing)
-                    msg += _msg_self_healed[:-1].format(heal=healing) + _msg_stat.format(name=self.get_name(),status=self.status())
+                    msg += _msg_self_healed[:-1].format(heal=healing) + _msg_stat.format(name=self.get_name(), status=self.status())
 
+    # Защита
     def defend_action(self, player2: Character | None = None, enemy: Enemy | None = None) -> str:
         self._effects['defending'] = True
 
