@@ -54,11 +54,19 @@ class Game:
             player2 = self._player_repo.get_by_player_id(event.get('player2_id', 0))
             enemy2 = self._mob_repo.get_by_id(player2.get_enemy_id())
             msg += player.defend_action(player2, enemy2)
+            if player2 is not None:
+                self._player_repo.update(player2)
+            if enemy2 is not None:
+                self._mob_repo.update(enemy2)
 
         if actions.get('!помогает', False):
             player2 = self._player_repo.get_by_player_id(event.get('player2_id', 0))
             enemy2 = self._mob_repo.get_by_id(player2.get_enemy_id())
             msg += player.help_action(player2, enemy2)
+            if player2 is not None:
+                self._player_repo.update(player2)
+            if enemy2 is not None:
+                self._mob_repo.update(enemy2)
 
         if actions.get('!убегает', False):
             msg += player.run_away_action()
@@ -77,6 +85,10 @@ class Game:
         if actions.get('!колдует', False):
             player.set_effect('magic_attack')
             player.attack_action()
+
+        self._player_repo.update(player)
+        if enemy is not None:
+            self._mob_repo.update(enemy)
 
         return msg
 
