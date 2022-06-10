@@ -46,7 +46,7 @@ class PlayerAvatarRepo(Repo):
     def get_active_by_player_id(self, id: int) -> Avatar | None:
         p: dict = self._source.find_one({'player_id': id, 'active': True})
         if p is None:
-            p = self._source.find_one({'player_id': id, 'archieved': False})
+            p = self._source.find_one({'player_id': id, 'archived': False})
             if p is not None:
                 p['active'] = True
         return None if p is None else Avatar(p)
