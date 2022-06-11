@@ -39,9 +39,16 @@ class Location:
             return None
 
         mob = None
+        r = random.randint(0, len(self._mobs))
+        i = 0
+        name = ""
 
         names = self._mobs.keys()
-        name = names.mapping[random.randint(0, len(self._mobs))]
+        for n in names:
+            name = n
+            i += 1
+            if i == r:
+                break
 
         for i in range(len(self._mobs[name])):
             m: Enemy = self._mobs[name][i]
