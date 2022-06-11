@@ -1,12 +1,9 @@
-from enum import Enum
-
-
-class Gender(Enum):
+class Gender:
     MALE = 'male'
     FEMALE = 'female'
 
 
-class EnemyHealthStatus(Enum):
+class EnemyHealthStatus:
     HEALTH = 'здоров'
     DAM20 = 'замедлен'
     DAM40 = 'получил заметные повреждения'
@@ -15,7 +12,7 @@ class EnemyHealthStatus(Enum):
     DEAD = 'мертв'
 
 
-class EnemyCombatStatus(Enum):
+class EnemyCombatStatus:
     IDLE = 'idle'
     COMBAT = 'combat'
     MILLE = 'mille_combat'
@@ -24,7 +21,7 @@ class EnemyCombatStatus(Enum):
     CHASE = 'chase'
 
 
-class HealthStatus(Enum):
+class HealthStatus:
     HEALTH = 'здоров'
     DAM10 = 'легкое ранение'
     DAM20 = 'среднее ранение'
