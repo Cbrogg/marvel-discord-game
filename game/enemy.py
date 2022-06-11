@@ -154,9 +154,6 @@ class Enemy(Character):
     def is_healthy(self) -> bool:
         return self._hp >= self.max_hp()
 
-    def max_hp(self) -> int:
-        return int(5 + (self.special['s'] + self.special['e']) * 3)
-
     def is_idle(self) -> bool:
         return self._c_status == EnemyCombatStatus.IDLE
 
