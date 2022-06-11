@@ -11,6 +11,7 @@ _msg_take_damage_female = "{} получила {} урона."
 _msg_dead_male = " {} мертв.\n"
 _msg_dead_female = " {} мертва.\n"
 
+
 class Enemy(Character):
     _gender: Gender
     _c_status: EnemyCombatStatus
@@ -152,6 +153,9 @@ class Enemy(Character):
 
     def is_healthy(self) -> bool:
         return self._hp >= self.max_hp()
+
+    def max_hp(self) -> int:
+        return int(5 + (self.special['s'] + self.special['e']) * 3)
 
     def is_idle(self) -> bool:
         return self._c_status == EnemyCombatStatus.IDLE
