@@ -147,7 +147,8 @@ class MobRepo(Repo):
             enms = self._source.find({'channel': channel})
         for enemy in enms:
             en = Enemy(enemy)
-            en.set_avatar(self._avatar_repo.get_by_name(en.get_name()))
+            a = self._avatar_repo.get_by_name(en.get_name())
+            en.set_avatar(a)
             e.append(en)
         return e
 
