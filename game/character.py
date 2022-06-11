@@ -7,6 +7,7 @@ from .special import Special
 class Avatar:
     _id: str
     _name: str
+    type: dict
     avatar_class: str
     player_id: int = 0
     special: Special
@@ -18,6 +19,7 @@ class Avatar:
         self._name = data.get('name', 'empty')
         self.avatar_class = data.get('class', 'empty')
         self.player_id = data.get('player_id', 0)
+        self.type = data.get('type', {'one': 'монстр', 'many': 'монстры', 'no': 'монстров'})
         self.special = Special(data.get('special', {}))
         self.skills = data.get('skills', {})
         self.active = data.get('active', True)
@@ -46,7 +48,6 @@ class Avatar:
 class Character:
     _id: str
     _name: str
-    _type: str
     _hp: int
     _stamina: int
     _avatar_id: str
@@ -121,5 +122,5 @@ class Character:
     def get_name(self) -> str:
         return self._name
 
-    def get_type(self) -> str:
-        return self._type
+    def get_type(self) -> dict:
+        return self._avatar.type

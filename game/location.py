@@ -80,9 +80,9 @@ class Location:
                 count += len(self._mobs[name])
 
             if r == 20:
-                return _msg_count_enemy.format(count=count, type=self.get_any_mob().get_type())
+                return _msg_count_enemy.format(count=count, type=self.get_any_mob().get_type()['many'])
             elif 10 <= r < 20:
                 c = 'не больше десятка' if count < 10 else 'не меньше десятка'
-                return _msg_count_enemy.format(count=c, type=self.get_any_mob().get_type())
+                return _msg_count_enemy.format(count=c, type=self.get_any_mob().get_type()['no'])
             elif r < 10:
-                return _msg_hear_enemy.format(type=self.get_any_mob().get_type())
+                return _msg_hear_enemy.format(type=self.get_any_mob().get_type()['many'])
