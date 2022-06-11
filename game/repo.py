@@ -146,7 +146,9 @@ class MobRepo(Repo):
         else:
             enms = self._source.find({'channel': channel})
         for enemy in enms:
-            e.append(Enemy(enemy))
+            en = Enemy(enemy)
+            en.set_avatar(self._avatar_repo.get_by_name(en.get_name()))
+            e.append(en)
         return e
 
     # Выбор врагов по типу. Возможен выбор врагов по типу в определённом канале

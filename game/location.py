@@ -46,9 +46,10 @@ class Location:
         names = self._mobs.keys()
         for n in names:
             name = n
-            i += 1
             if i == r:
                 break
+            else:
+                i += 1
 
         for i in range(len(self._mobs[name])):
             m: Enemy = self._mobs[name][i]
