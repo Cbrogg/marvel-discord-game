@@ -206,7 +206,7 @@ class Player(Character):
                     msg += _msg_max_healed.format(name=player2.get_name())
                 else:
                     player2.heal(healing)
-                    msg += _msg_healed[:-1].format(name=player2.get_name()) + _msg_stat.format(name=player2.get_name(), status=player2.status())
+                    msg += _msg_healed[:-1].format(name=player2.get_name(), heal=healing) + _msg_stat.format(name=player2.get_name(), status=player2.status())
         else:
             if not self.is_healable():
                 msg += _msg_self_need_rest

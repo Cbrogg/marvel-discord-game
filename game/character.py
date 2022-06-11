@@ -113,6 +113,8 @@ class Character:
             else:
                 self._hp += heal
 
+
+
     def is_healable(self) -> bool:
         return self._hp < int(self.max_hp() * 4 / 5)
 
