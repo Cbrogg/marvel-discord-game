@@ -48,7 +48,10 @@ class Game:
             msg += player.look_around_action(Location(event.get('channel_id', 0), self._mob_repo.select(event.get('channel_id', 0))))
 
         if actions.get('!лечит', False):
-            msg += player.heal_action(self._player_repo.get_by_player_id(event.get('player2_id', 0)))
+            player2 = self._player_repo.get_by_player_id(event.get('player2_id', 0))
+            msg += player.heal_action(player2)
+            if player2 is not None:
+                self._player_repo.update(player2)
 
         if actions.get('!защищает', False):
             player2 = self._player_repo.get_by_player_id(event.get('player2_id', 0))
