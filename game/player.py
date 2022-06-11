@@ -194,7 +194,7 @@ class Player(Character):
         return msg
 
     # Лечение
-    def heal_action(self, player2: Character | None = None):
+    def heal_action(self, player2: Character | None = None) -> str:
         msg = ""
         if player2 is not None:
             if not player2.is_healable():
@@ -219,6 +219,7 @@ class Player(Character):
                     healing = int(healing / 2)
                     self.heal(healing)
                     msg += _msg_self_healed[:-1].format(heal=healing) + _msg_stat.format(name=self.get_name(), status=self.status())
+        return msg
 
     # Защита
     def defend_action(self, player2: Character | None = None, enemy: Enemy | None = None) -> str:
