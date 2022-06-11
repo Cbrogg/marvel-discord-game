@@ -40,7 +40,8 @@ class Location:
 
         mob = None
 
-        name = self._mobs.keys()[random.randint(0, len(self._mobs))]
+        names = self._mobs.keys()
+        name = names.mapping[random.randint(0, len(self._mobs))]
 
         for i in range(len(self._mobs[name])):
             m: Enemy = self._mobs[name][i]
