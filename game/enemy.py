@@ -151,7 +151,7 @@ class Enemy(Character):
         return str(self._h_status)
 
     def is_healthy(self) -> bool:
-        return self._hp == self.max_hp()
+        return self._hp >= self.max_hp()
 
     def is_idle(self) -> bool:
         return self._c_status == EnemyCombatStatus.IDLE

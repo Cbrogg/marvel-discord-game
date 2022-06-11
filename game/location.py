@@ -55,12 +55,14 @@ class Location:
             m: Enemy = self._mobs[name][i]
             if m.is_healthy() and m.is_idle():
                 mob = m
+                break
 
         if mob is None:
             for i in range(len(self._mobs[name])):
                 m: Enemy = self._mobs[name][i]
                 if m.is_idle():
                     mob = m
+                    break
 
         if mob is None:
             mob = self._mobs[name][0]
