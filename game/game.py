@@ -23,6 +23,7 @@ _msg_count_enemy = "Осмотревшись, вы насчитали {count} {t
 _msg_hear_enemy = "В округе слышны {type}.\n"
 _msg_detected = "Вас заметили. \n"
 _msg_followed = "К вам движется {name}.\n"
+_msg_yet_followed = "Вас всё ещё преследуют.\n"
 _msg_caught = "Вас догнал {name}!\n"
 _msg_helped = "Вам помогли избавиться от противника.\n"
 
