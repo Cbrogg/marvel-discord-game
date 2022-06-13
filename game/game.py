@@ -32,8 +32,9 @@ class Game:
     def exec_event(self, event: dict) -> str:
         player: Player = self._player_repo.get_by_player_id(event.get('player_id', 0))
         enemy: Enemy = self._mob_repo.get_by_id(player.get_enemy_id())
-        enemy.set_priority_target(self._player_repo.get_by_player_id(enemy.get_priority_target_id()))
-        player.set_enemy(enemy)
+        if enemy is not None:
+            enemy.set_priority_target(self._player_repo.get_by_player_id(enemy.get_priority_target_id()))
+            player.set_enemy(enemy)
         if player is None:
             return _msg_no_id
         actions = event.get('actions', None)
