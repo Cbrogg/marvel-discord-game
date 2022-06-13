@@ -122,7 +122,7 @@ class Game:
             notion = random.randint(1, 100)
             if notion <= 50:
                 m = l.get_any_mob()
-                msg += _msg_hear_enemy.format(m.get_type().get('many', 'Монстры'))
+                msg += _msg_hear_enemy.format(type=m.get_type().get('many', 'Монстры'))
 
             detection = random.randint(1, 100)
 
