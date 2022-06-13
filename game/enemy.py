@@ -85,7 +85,10 @@ class Enemy(Character):
 
     def del_target(self, id: int):
         p = self.get_priority_by_id(id)
-        self._targets.remove(p)
+        if p is not None:
+            self._targets.remove(p)
+        if len(self._targets) == 0:
+            self._status = 'ждет'
 
     def in_combat(self):
         self._status = 'в бою'
