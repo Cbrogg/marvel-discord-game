@@ -24,6 +24,7 @@ _msg_hear_enemy = "В округе слышны {type}.\n"
 _msg_detected = "Вас заметили. \n"
 _msg_followed = "К вам движется {name}.\n"
 _msg_caught = "Вас догнал {name}!\n"
+_msg_helped = "Вам помогли избавиться от противника.\n"
 
 class Game:
     _player_repo: PlayerRepo
