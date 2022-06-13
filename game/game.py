@@ -27,6 +27,7 @@ _msg_yet_followed = "Вас всё ещё преследуют.\n"
 _msg_caught = "Вас догнал {name}!\n"
 _msg_helped = "Вам помогли избавиться от противника.\n"
 
+
 class Game:
     _player_repo: PlayerRepo
     _mob_repo: MobRepo
