@@ -60,7 +60,7 @@ class Game:
         if actions is None:
             return _msg_no_action
 
-        if len(actions) == 0 and player.has_enemy():
+        if (actions.get('!атакует', False) or actions.get('!стреляет', False) or actions.get('!колдует', False)) and player.has_enemy():
             msg += player.idle_action()
 
         if actions.get('!осмотр', False):

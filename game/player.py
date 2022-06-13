@@ -286,9 +286,9 @@ class Player(Character):
                 self._enemy.del_target(self._player_id)
                 self.drop_enemy()
                 msg = _msg_run_away.format(name=e)
-                if random.randint(0, 100) <= 75:
-                    msg += _msg_get_invis
-                    self._e_status = 'не замечен'
+                # if random.randint(0, 100) <= 75:
+                msg += _msg_get_invis
+                self._e_status = 'не замечен'
                 return msg
             else:
                 damage = self._enemy.deal_damage()
