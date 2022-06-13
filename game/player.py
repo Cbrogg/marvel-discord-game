@@ -322,6 +322,8 @@ class Player(Character):
     # Атака
     def attack_action(self) -> str:
         msg = ""
+        if self._enemy.get_combat_status() != 'в бою':
+            self._enemy.in_combat()
         if self._effects.get('mille_attack', False):
             self._effects.pop('mille_attack')
             if not self.is_priority_target():
