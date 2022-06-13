@@ -298,16 +298,16 @@ class Player(Character):
     # Атака
     def attack_action(self):
         msg = ""
-        if self._effects['mille_attack']:
+        if self._effects.get('mille_attack', False):
             if not self.is_priority_target():
                 self._enemy.inc_priority(self._player_id)
                 msg += _msg_take_target.format(enemy_name=self._enemy.get_name(), name=self._name)
             max_damage = self.max_mille_damage()
 
-        elif self._effects['magic_attack']:
+        elif self._effects.get('magic_attack', False):
             max_damage = self.max_range_damage()
 
-        elif self._effects['range_attack']:
+        elif self._effects.get('range_attack', False):
             max_damage = self.max_magic_damage()
 
         else:
@@ -315,7 +315,7 @@ class Player(Character):
 
         crit_m = 2
 
-        if self._effects['dodged']:
+        if self._effects.get('dodged', False):
             max_damage = int(max_damage / 2)
             crit_m = 4
 
@@ -325,7 +325,7 @@ class Player(Character):
         damage = self._enemy.deal_damage()
 
         if self.is_priority_target():
-            if self._effects['defending']:
+            if self._effects.get('defending', False):
                 damage = int(damage / 2)
                 msg += self.take_damage(damage)
                 if not self.is_dead():
@@ -338,7 +338,7 @@ class Player(Character):
                     if self._enemy.is_dead():
                         self.kill_enemy()
                     else:
-                        if self._effects['dodged']:
+                        if self._effects.get('dodged', False):
                             dodged = random.randint(1, 100) <= self.get_chase_escape_chance()
                             if not dodged:
                                 msg += _msg_not_dodge
@@ -348,7 +348,7 @@ class Player(Character):
                         else:
                             msg += self.take_damage(damage)
                 else:
-                    if self._effects['dodged']:
+                    if self._effects.get('dodged', False):
                         dodged = random.randint(1, 100) <= self.get_chase_escape_chance()
                         if not dodged:
                             msg += self.take_damage(damage)
@@ -376,7 +376,7 @@ class Player(Character):
                 self._e_status = 'не замечен'
                 msg += _msg_lost_interest.format(name=self._enemy.get_type())
         else:
-            msg += self._enemy.deal_damage_to_priority_target().format(name=self._name)
+            # msg += self._enemy.deal_damage_to_priority_target().format(name=self._name)
             msg += self._enemy.take_damage(damage_player)
             if self._enemy.is_dead():
                 self.kill_enemy()
