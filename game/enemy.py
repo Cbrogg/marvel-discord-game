@@ -147,7 +147,7 @@ class Enemy(Character):
             self._hp = self.max_hp()
 
     def get_combat_status(self) -> str:
-        return str(self._c_status)
+        return str(self._status)
 
     def get_health_status(self) -> str:
         return str(self._h_status)
