@@ -99,7 +99,7 @@ class Enemy(Character):
         s['level'] = self._level
         s['channel'] = self._channel
         s['targets'] = self.priority_to_dict()
-        s['status'] = self.get_combat_status()
+        s['status'] = self._status
 
         return s
 
