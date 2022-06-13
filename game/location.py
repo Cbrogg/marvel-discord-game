@@ -27,7 +27,8 @@ class Location:
             return 0
         d = [int]
         for name in self._mobs.keys():
-            d.append(self._mobs[name][0].special.detection())
+            m: Enemy = self._mobs[name][0]
+            d.append(m.detection())
 
         return max(d)
 

@@ -158,6 +158,9 @@ class Enemy(Character):
     def is_idle(self) -> bool:
         return self._status == 'ждет'
 
+    def detection(self) -> int:
+        return self._avatar.special.detection()
+
 
 class EnemyGroup:
     _leader: Enemy
