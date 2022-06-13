@@ -72,6 +72,12 @@ class Player(Character):
         # self._h_status = data.get('h_status', "")  # TODO PlayerHealthStatus("Здоров, ранен и т.д.")
         self._player_class = data.get('class', 'физ')
 
+    def export(self) -> dict:
+        d = super().export()
+        d['enemy_id'] = self._enemy_id
+        d['player_id'] = self._player_id
+        d['kills'] = self._kills
+
     # Получить дискордовый ID игрока
     def get_player_id(self) -> int:
         return self._player_id
