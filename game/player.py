@@ -23,7 +23,7 @@ _msg_no_target = "Нет цели для атаки.\n"
 _msg_lost_interest = "{name} потеряли к вам интерес.\n"
 
 # Лечение
-_msg_max_healed = "Вы максимально вылечили {name}. Теперь ему нужен отдых.\n"
+_msg_max_healed = "Вы максимально вылечили {name}. Теперь {name} нужен отдых.\n"
 _msg_healed = "Вы вылечили {name} на {heal} единиц.\n"
 _msg_self_max_healed = "Вы максимально вылечили себя. Теперь вам нужен отдых.\n"
 _msg_self_healed = "Вы вылечили себя на {heal} единиц.\n"
@@ -224,6 +224,9 @@ class Player(Character):
     # Защита
     def defend_action(self, player2: Character | None = None, enemy: Enemy | None = None) -> str:
         self._effects['defending'] = True
+
+        if player2 is None and enemy is None:
+            return _msg_self_defending
 
         if player2 is None or enemy is None:
             return _msg_defend_not_needed
