@@ -64,6 +64,8 @@ class Player(Character):
         self._player_id = data.get('player_id', 0)
         self._kills = data.get('kills', 0)
         self._enemy_id = data.get('enemy_id', "")
+        if self._enemy_id == "":
+            self._enemy_id = data.get('zombie', "")
         self._enemy = enemy
         self._e_status = data.get('e_status', "")  # TODO PlayerEnemyStatus("Замечен, Не замечен, и т.д.")
         # self._h_status = data.get('h_status', "")  # TODO PlayerHealthStatus("Здоров, ранен и т.д.")
