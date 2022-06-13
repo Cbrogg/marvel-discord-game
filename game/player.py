@@ -425,6 +425,7 @@ class Player(Character):
         if self.has_enemy() and self.is_priority_target():
             damage = self._enemy.deal_damage()
             if self._effects.get('defending', False):
+                self._effects.pop('defending')
                 damage = int(damage / 2)
                 msg += self.take_damage(damage)
 
