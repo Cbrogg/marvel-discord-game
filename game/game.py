@@ -95,13 +95,13 @@ class Game:
             if enemy2 is not None:
                 self._mob_repo.update(enemy2)
 
+        msg += self.passive_event(player, enemy, event.get('channel_id', 0))
+
         if actions.get('!убегает', False):
             msg += player.run_away_action()
 
         if actions.get('!уклон', False):
             player.set_effect('dodged')
-
-        msg += self.passive_event(player, enemy, event.get('channel_id', 0))
 
         if actions.get('!атакует', False):
             if not player.has_enemy():
@@ -133,7 +133,8 @@ class Game:
         self._player_repo.update(player)
         if enemy is not None:
             self._mob_repo.update(enemy)
-            self._player_repo.update(enemy.get_priority_target())
+            if enemy.get_priority_target() is not None:
+                self._player_repo.update(enemy.get_priority_target())
 
         self._mob_repo.delete_by_status()
 
