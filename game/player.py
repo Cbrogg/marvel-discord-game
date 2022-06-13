@@ -97,6 +97,9 @@ class Player(Character):
     def remove_effect(self, key):
         self._effects.pop(key)
 
+    def is_escaped(self) -> bool:
+        return self._effects.get('escaped', False)
+
     # Максимальный урон дальней атаки
     def max_range_damage(self) -> int:
         return int(self._avatar.special.p * 3 + self._avatar.special.a * 2) if self._player_class == 'физ' else int(

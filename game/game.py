@@ -95,10 +95,10 @@ class Game:
             if enemy2 is not None:
                 self._mob_repo.update(enemy2)
 
-        msg += self.passive_event(player, enemy, event.get('channel_id', 0))
-
         if actions.get('!убегает', False):
             msg += player.run_away_action()
+
+        msg += self.passive_event(player, enemy, event.get('channel_id', 0))
 
         if actions.get('!уклон', False):
             player.set_effect('dodged')
@@ -142,6 +142,9 @@ class Game:
 
     def passive_event(self, player: Player | None = None, enemy: Enemy | None = None, location: int = 0) -> str:
         msg = ""
+        if player.is_escaped():
+            player.remove_effect('escaped')
+            return msg
         l = Location(location, self._mob_repo.select(location))
         if not player.has_enemy():
             notion = random.randint(1, 100)
