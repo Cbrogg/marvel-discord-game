@@ -81,6 +81,7 @@ class Game:
             player2 = self._player_repo.get_by_player_id(event.get('player2_id', 0))
             enemy2 = self._mob_repo.get_by_id(player2.get_enemy_id())
             msg += player.help_action(player2, enemy2)
+            msg += player.attack_action()
             if player2 is not None:
                 self._player_repo.update(player2)
             if enemy2 is not None:
