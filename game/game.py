@@ -41,6 +41,7 @@ class Game:
     def exec_event(self, event: dict) -> str:
         player: Player = self._player_repo.get_by_player_id(event.get('player_id', 0))
         enemy: Enemy = self._mob_repo.get_by_id(player.get_enemy_id())
+        l = Location(event.get('channel_id', 0), self._mob_repo.select(event.get('channel_id', 0)))
         if enemy is not None:
             enemy.set_priority_target(self._player_repo.get_by_player_id(enemy.get_priority_target_id()))
             player.set_enemy(enemy)
@@ -96,14 +97,26 @@ class Game:
             player.set_effect('dodged')
 
         if actions.get('!атакует', False):
+            if not player.has_enemy():
+                enemy = l.get_any_mob()
+                if enemy is not None:
+                    player.set_enemy(enemy)
             player.set_effect('mille_attack')
             msg += player.attack_action()
 
         if actions.get('!стреляет', False):
+            if not player.has_enemy():
+                enemy = l.get_any_mob()
+                if enemy is not None:
+                    player.set_enemy(enemy)
             player.set_effect('range_attack')
             msg += player.attack_action()
 
         if actions.get('!колдует', False):
+            if not player.has_enemy():
+                enemy = l.get_any_mob()
+                if enemy is not None:
+                    player.set_enemy(enemy)
             player.set_effect('magic_attack')
             msg += player.attack_action()
 
