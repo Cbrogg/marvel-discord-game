@@ -74,8 +74,13 @@ class Enemy(Character):
         self._targets.append(pr)
 
     def add_target(self, id: int):
-        if self.get_priority_by_id(id) is None:
-            self._targets.append(Priority(id))
+        if len(self._targets) == 0:
+            if self.get_priority_by_id(id) is None:
+                self._targets.append(Priority(id, 1))
+        else:
+            if self.get_priority_by_id(id) is None:
+                self._targets.append(Priority(id))
+
 
     def del_target(self, id: int):
         p = self.get_priority_by_id(id)
