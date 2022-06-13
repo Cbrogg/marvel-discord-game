@@ -149,6 +149,7 @@ class Player(Character):
     # Удаление моба из врагов игрока. Сброс противника
     def drop_enemy(self):
         if self._enemy is not None:
+            self._enemy.del_target(self._player_id)
             self._enemy = None
             self._enemy_id = ""
         if self._enemy_id != "":
@@ -282,7 +283,7 @@ class Player(Character):
                 self.drop_enemy()
                 msg = _msg_run_away.format(name=e)
                 if random.randint(0, 100) <= 75:
-                    msg += _msg_get_invis.format(type=e)
+                    msg += _msg_get_invis
                     self._e_status = 'не замечен'
                     return msg
             else:
