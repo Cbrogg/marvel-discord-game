@@ -131,8 +131,8 @@ class MobRepo(Repo):
         p: dict = self._source.find_one({'_id': id})
         if p is None:
             return None
-        avatar = self._avatar_repo.get_by_id(p.get('avatar_id', ""))
         mob = Enemy(p)
+        avatar = self._avatar_repo.get_by_name(mob.get_name())
         mob.set_avatar(avatar)
         return mob
 
