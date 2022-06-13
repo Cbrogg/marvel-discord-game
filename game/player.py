@@ -77,6 +77,8 @@ class Player(Character):
         d['enemy_id'] = self._enemy_id
         d['player_id'] = self._player_id
         d['kills'] = self._kills
+        d['status'] = self.status()
+        d['e_status'] = self._e_status
 
     # Получить дискордовый ID игрока
     def get_player_id(self) -> int:
