@@ -308,11 +308,11 @@ class Player(Character):
 
         elif self._effects.get('magic_attack', False):
             self._effects.pop('magic_attack')
-            max_damage = self.max_range_damage()
+            max_damage = self.max_magic_damage()
 
         elif self._effects.get('range_attack', False):
             self._effects.pop('range_attack')
-            max_damage = self.max_magic_damage()
+            max_damage = self.max_range_damage()
 
         else:
             return

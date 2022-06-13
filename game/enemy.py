@@ -123,13 +123,13 @@ class Enemy(Character):
     def deal_damage(self) -> int:
         match self._c_status:
             case EnemyCombatStatus.MILLE:
-                max_damage = self.max_mille_damage()
+                max_damage = int(self.max_mille_damage())
             case EnemyCombatStatus.RANGE:
-                max_damage = self.max_range_damage()
+                max_damage = int(self.max_range_damage())
             case EnemyCombatStatus.MAGIC:
-                max_damage = self.max_magic_damage()
+                max_damage = int(self.max_magic_damage())
             case _:
-                max_damage = self.max_mille_damage()
+                max_damage = int(self.max_mille_damage())
 
         dice = random.randint(1, 20)
         damage = 0 if dice < 10 else max_damage * dice / 20
