@@ -384,6 +384,7 @@ class Player(Character):
                         self._effects.pop('dodged')
                         dodged = random.randint(1, 100) <= self.get_chase_escape_chance()
                         if not dodged:
+                            msg += _msg_not_dodge
                             msg += self.take_damage(damage)
                             if self.is_dead():
                                 msg += _msg_fall.format(name=self._name)
