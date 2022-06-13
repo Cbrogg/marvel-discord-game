@@ -121,7 +121,7 @@ class Enemy(Character):
         return msg
 
     def deal_damage(self) -> int:
-        match self._c_status:
+        match self._status:
             case EnemyCombatStatus.MILLE:
                 max_damage = int(self.max_mille_damage())
             case EnemyCombatStatus.RANGE:
