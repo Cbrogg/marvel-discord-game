@@ -159,7 +159,7 @@ class Enemy(Character):
         return self._hp >= self.max_hp()
 
     def is_idle(self) -> bool:
-        return self._c_status == 'ждет'
+        return self._status == 'ждет'
 
 
 class EnemyGroup:
