@@ -121,7 +121,8 @@ class Game:
         if not player.has_enemy():
             notion = random.randint(1, 100)
             if notion <= 50:
-                msg += _msg_hear_enemy.format(l.get_any_mob().get_type()['many'])
+                m = l.get_any_mob()
+                msg += _msg_hear_enemy.format(m.get_type().get('many', 'Монстры'))
 
             detection = random.randint(1, 100)
 

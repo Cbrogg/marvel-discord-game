@@ -40,7 +40,7 @@ class Location:
             return None
 
         mob = None
-        r = random.randint(0, len(self._mobs))
+        r = random.randint(0, len(self._mobs)-1)
         i = 0
         name = ""
 
