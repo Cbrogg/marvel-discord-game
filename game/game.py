@@ -17,6 +17,13 @@ _msg_no_action = "В событии нет ни одного действия"
 _msg_player_not_find = "Персонажа нет в игре"
 _msg_player_in_game = "Персонаж уже в игре"
 
+# Осмотр
+_msg_clean_location = "Вокруг нет ни следа противника.\n"
+_msg_count_enemy = "Осмотревшись, вы насчитали {count} {type}.\n"
+_msg_hear_enemy = "В округе слышны {type}.\n"
+_msg_detected = "Вас заметили. \n"
+_msg_followed = "К вам движется {name}.\n"
+_msg_caught = "Вас догнал {name}!\n"
 
 class Game:
     _player_repo: PlayerRepo
