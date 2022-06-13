@@ -294,7 +294,6 @@ class Player(Character):
                 damage = self._enemy.deal_damage()
                 return _msg_not_run + _msg_self_get_damage.format(damage=damage)
         else:
-            e = self._enemy.get_type
             if self._e_status == 'замечен':
                 escape = random.randint(0, 100)
                 if escape <= 75:
