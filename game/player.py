@@ -54,7 +54,7 @@ _msg_def_get_damage = '{defender_name} получил {damage} урона вме
 _msg_run_away = "Вы убежали от {name}.\n"
 _msg_get_invis = "Вас потеряли из виду.\n"
 _msg_not_run = "Убежать не вышло.\n"
-_msg_not_dodge = "Вы не смогли уклониться и получили {} урона.\n"
+_msg_not_dodge = "Вы не смогли уклониться. "
 _msg_dodge = "Вы смогли уклониться и получили 0 урона.\n"
 
 
