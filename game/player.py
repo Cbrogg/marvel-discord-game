@@ -97,18 +97,18 @@ class Player(Character):
     def max_magic_damage(self) -> int:
         return 0 if self._player_class != 'маг' else int(self._avatar.special.p * 2 + self._avatar.special.i * 2)
 
-    # Получение урона игроком
-    def take_damage(self, damage: int) -> str:  # TODO
-        d = damage - self._avatar.special.e if damage > self._avatar.special.e else 0
-        msg = _msg_self_get_damage.format(damage=d)
-        self._hp -= d
-        if self._hp <= 0:
-            msg += _msg_fall.format(name='Вы')
-            self._hp = 0
-        else:
-            msg += '\n'
-
-        return msg
+    # # Получение урона игроком
+    # def take_damage(self, damage: int) -> str:  # TODO
+    #     d = damage - self._avatar.special.e if damage > self._avatar.special.e else 0
+    #     msg = _msg_self_get_damage.format(damage=d)
+    #     self._hp -= d
+    #     if self._hp <= 0:
+    #         msg += _msg_fall.format(name='Вы')
+    #         self._hp = 0
+    #     else:
+    #         msg += '\n'
+    #
+    #     return msg
 
     # Проверка игрока на жизнедеятельность
     def is_dead(self) -> bool:

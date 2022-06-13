@@ -135,7 +135,7 @@ class Enemy(Character):
 
     def deal_damage_to_priority_target(self) -> str:
         msg = self._priority_target.take_damage(int(self.deal_damage()/3))
-        msg = msg[:-1] + "вместо {name}. \n"
+        msg = msg[:-2] + " вместо {name}. \n"
         return msg
 
     def is_dead(self) -> bool:
