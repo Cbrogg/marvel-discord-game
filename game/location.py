@@ -25,7 +25,7 @@ class Location:
     def get_max_detection(self) -> int:
         if len(self._mobs) == 0:
             return 0
-        d = list[int]
+        d = []
         for name in self._mobs.keys():
             m: Enemy = self._mobs[name][0]
             d.append(m.detection())
