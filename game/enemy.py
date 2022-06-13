@@ -14,8 +14,7 @@ _msg_dead_female = " {} мертва.\n"
 
 class Enemy(Character):
     _gender: Gender
-    _c_status: EnemyCombatStatus
-    _h_status: EnemyHealthStatus
+    _status: str
     _level: int
     _channel: int
     _targets: list[Priority] = []
@@ -25,10 +24,10 @@ class Enemy(Character):
 
     def __init__(self, data: dict, ch_id=None):
         super().__init__(data)
+        self._status = data.get('status', 'ждет')
         self._gender = data.get('gender', Gender.MALE)
         self._level = data.get('level', 1)
         self._channel = data.get('channel', ch_id)
-        self._c_status = data.get('status', EnemyCombatStatus.IDLE)
         self.targets_from_dict(data.get('targets', {}))
 
     # def get_priority_target(self) -> Player:
@@ -112,6 +111,7 @@ class Enemy(Character):
         msg = _msg_take_damage_male.format(self._name, d) if self._gender == Gender.MALE else _msg_take_damage_female.format(self._name, d)
         self._hp -= d
         if self._hp <= 0:
+            self._status = 'мертв'
             msg += _msg_dead_male.format(self._name) if self._gender == Gender.MALE else _msg_dead_female.format(self._name)
             self._hp = 0
             self._h_status = EnemyHealthStatus.DEAD

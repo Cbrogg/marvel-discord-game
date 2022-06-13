@@ -184,3 +184,6 @@ class MobRepo(Repo):
             except ValueError:
                 names.append(enemy.get_name())
         return names
+
+    def delete_by_status(self, status="мертв"):
+        self._source.delete_many({'status': status})

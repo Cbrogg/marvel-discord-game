@@ -96,6 +96,8 @@ class Game:
         if enemy is not None:
             self._mob_repo.update(enemy)
 
+        self._mob_repo.delete_by_status()
+
         return msg
 
 
