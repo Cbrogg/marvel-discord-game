@@ -60,18 +60,6 @@ class Game:
         if actions is None:
             return _msg_no_action
 
-        if (actions.get('!атакует', False) or actions.get('!стреляет', False) or actions.get('!колдует', False)) and player.has_enemy():
-            msg += player.idle_action()
-
-        if actions.get('!осмотр', False):
-            msg += player.look_around_action(Location(event.get('channel_id', 0), self._mob_repo.select(event.get('channel_id', 0))))
-
-        if actions.get('!лечит', False):
-            player2 = self._player_repo.get_by_player_id(event.get('player2_id', 0))
-            msg += player.heal_action(player2)
-            if player2 is not None:
-                self._player_repo.update(player2)
-
         if actions.get('!защищает', False):
             player2 = self._player_repo.get_by_player_id(event.get('player2_id', 0))
             if player2 is not None:
@@ -83,6 +71,21 @@ class Game:
                 self._player_repo.update(player2)
             if enemy2 is not None:
                 self._mob_repo.update(enemy2)
+
+        if actions.get('!уклон', False):
+            player.set_effect('dodged')
+
+        if (actions.get('!атакует', False) or actions.get('!стреляет', False) or actions.get('!колдует', False)) and player.has_enemy():
+            msg += player.idle_action()
+
+        if actions.get('!осмотр', False):
+            msg += player.look_around_action(Location(event.get('channel_id', 0), self._mob_repo.select(event.get('channel_id', 0))))
+
+        if actions.get('!лечит', False):
+            player2 = self._player_repo.get_by_player_id(event.get('player2_id', 0))
+            msg += player.heal_action(player2)
+            if player2 is not None:
+                self._player_repo.update(player2)
 
         if actions.get('!помогает', False):
             player2 = self._player_repo.get_by_player_id(event.get('player2_id', 0))
@@ -100,9 +103,6 @@ class Game:
             msg += player.run_away_action()
 
         msg += self.passive_event(player, enemy, event.get('channel_id', 0))
-
-        if actions.get('!уклон', False):
-            player.set_effect('dodged')
 
         if actions.get('!атакует', False):
             if not player.has_enemy():
