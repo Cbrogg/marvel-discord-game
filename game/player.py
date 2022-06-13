@@ -414,7 +414,7 @@ class Player(Character):
             if self._enemy.is_dead():
                 self.kill_enemy()
 
-        msg += _msg_stat
+        msg += _msg_stat.format(name=self._name, status=self.status())
         return msg
 
     # Отсутствие активных действий игрока
