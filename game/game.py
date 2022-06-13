@@ -98,6 +98,7 @@ class Game:
         self._player_repo.update(player)
         if enemy is not None:
             self._mob_repo.update(enemy)
+            self._player_repo.update(enemy.get_priority_target())
 
         self._mob_repo.delete_by_status()
 
