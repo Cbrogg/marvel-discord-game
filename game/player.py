@@ -74,7 +74,7 @@ class Player(Character):
 
     def export(self) -> dict:
         d = super().export()
-        d['enemy_id'] = self._enemy_id
+        d['enemy_id'] = self._enemy_id if self._enemy_id != "" else self._enemy.get_id()
         d['player_id'] = self._player_id
         d['kills'] = self._kills
         d['status'] = self.status()
