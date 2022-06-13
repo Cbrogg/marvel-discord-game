@@ -28,6 +28,7 @@ class Game:
         self._player_repo = PlayerRepo(db['z_players'], self._player_avatar_repo)
         self._mob_repo = MobRepo(db['zombies'], self._mob_avatar_repo)
 
+    # Обработка входящего сообщения
     def exec_event(self, event: dict) -> str:
         player: Player = self._player_repo.get_by_player_id(event.get('player_id', 0))
         enemy: Enemy = self._mob_repo.get_by_id(player.get_enemy_id())

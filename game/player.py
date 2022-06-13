@@ -7,7 +7,7 @@ from .location import Location
 
 # Проверки
 _msg_dead_player = "{mention}, вы без сознания и не можете реагировать на происходящее пока вас не вылечили"
-_msg_helped = "Вам помогли избавиться от {type_r}.\n"
+_msg_helped = "Вам помогли избавиться от противника.\n"
 _msg_dont_look = "Вам некогда осматриваться по сторонам.\n"
 _msg_need_rest = "Персонаж {name} максимально вылечен. Теперь {name} нужен отдых.\n"
 _msg_self_need_rest = "Вы максимально вылечены. Теперь вам необходим отдых. \n"
@@ -75,12 +75,15 @@ class Player(Character):
     def get_player_id(self) -> int:
         return self._player_id
 
+    # Получить ID врага
     def get_enemy_id(self) -> str:
         return self._enemy_id
 
+    # Уставить эффект
     def set_effect(self, key: str):
         self._effects[key] = True
 
+    # Удалить эффект
     def remove_effect(self, key):
         self._effects.pop(key)
 
@@ -391,6 +394,7 @@ class Player(Character):
 
         return msg
 
+    # Отсутсвие активных действий игрока
     def idle_action(self) -> str:
         msg = ""
         if self.has_enemy() and self.is_priority_target():
