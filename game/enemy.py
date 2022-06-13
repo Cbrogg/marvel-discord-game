@@ -46,6 +46,8 @@ class Enemy(Character):
         return None
 
     def get_priority_target_id(self) -> int:
+        if len(self._targets) == 0:
+            return -1
         p = self.get_max_priority()
         return int(p.id)
 
