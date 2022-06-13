@@ -345,7 +345,6 @@ class Player(Character):
         crit_m = 2
 
         if self._effects.get('dodged', False):
-            self._effects.pop('dodged')
             max_damage = int(max_damage / 2)
             crit_m = 4
 
@@ -415,6 +414,7 @@ class Player(Character):
             if self._enemy.is_dead():
                 self.kill_enemy()
 
+        msg += _msg_stat
         return msg
 
     # Отсутствие активных действий игрока
