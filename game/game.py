@@ -58,8 +58,6 @@ class Game:
         if actions is None:
             return _msg_no_action
 
-        msg += self.passive_event(player, enemy, event.get('channel_id', 0))
-
         if len(actions) == 0 and player.has_enemy():
             msg += player.idle_action()
             return msg
@@ -102,6 +100,8 @@ class Game:
 
         if actions.get('!уклон', False):
             player.set_effect('dodged')
+
+        msg += self.passive_event(player, enemy, event.get('channel_id', 0))
 
         if actions.get('!атакует', False):
             if not player.has_enemy():
