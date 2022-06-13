@@ -9,7 +9,7 @@ from .location import Location
 _msg_dead_player = "{mention}, вы без сознания и не можете реагировать на происходящее пока вас не вылечили"
 _msg_helped = "Вам помогли избавиться от {type_r}.\n"
 _msg_dont_look = "Вам некогда осматриваться по сторонам.\n"
-_msg_need_rest = "Персонаж {name} максимально вылечен. Теперь ему нужен отдых.\n"
+_msg_need_rest = "Персонаж {name} максимально вылечен. Теперь {name} нужен отдых.\n"
 _msg_self_need_rest = "Вы максимально вылечены. Теперь вам необходим отдых. \n"
 _msg_defend_not_needed = "Ваша защита не требуется.\n"
 _msg_cant_help = "Нет возможности помочь, вас атакуют.\n"
@@ -40,6 +40,7 @@ _msg_attack = "Вы атаковали {name_r}.\n"
 _msg_defend_player = "{defender_name} защищает {name}.\n"
 _msg_take_target = "{enemy_name} сосредоточил внимание на {name}.\n"
 _msg_help = "{helper_name} помогает {name}.\n"
+_msg_self_defending = "Вы защищаетесь.\n"
 
 # Получение урона и текущий статус
 _msg_stat = "Текущий статус персонажа {name}: {status}.\n"
