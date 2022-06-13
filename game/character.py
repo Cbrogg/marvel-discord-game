@@ -10,7 +10,7 @@ _msg_self_get_damage = '{name} получил(а) {damage} урона.'
 class Avatar:
     _id: str
     _name: str
-    type: dict
+    type: dict = {}
     avatar_class: str
     player_id: int = 0
     special: Special
