@@ -53,6 +53,8 @@ class Game:
 
         msg = ""
 
+        msg += self.passive_event(player, enemy, event.get('channel_id', 0))
+
         if len(actions) == 0 and player.has_enemy():
             msg += player.idle_action()
             return msg
@@ -101,6 +103,7 @@ class Game:
                 enemy = l.get_any_mob()
                 if enemy is not None:
                     player.set_enemy(enemy)
+                    enemy.set_priority_target(self._player_repo.get_by_player_id(enemy.get_priority_target_id()))
             player.set_effect('mille_attack')
             msg += player.attack_action()
 
@@ -109,6 +112,7 @@ class Game:
                 enemy = l.get_any_mob()
                 if enemy is not None:
                     player.set_enemy(enemy)
+                    enemy.set_priority_target(self._player_repo.get_by_player_id(enemy.get_priority_target_id()))
             player.set_effect('range_attack')
             msg += player.attack_action()
 
@@ -117,6 +121,7 @@ class Game:
                 enemy = l.get_any_mob()
                 if enemy is not None:
                     player.set_enemy(enemy)
+                    enemy.set_priority_target(self._player_repo.get_by_player_id(enemy.get_priority_target_id()))
             player.set_effect('magic_attack')
             msg += player.attack_action()
 
@@ -126,8 +131,6 @@ class Game:
             self._player_repo.update(enemy.get_priority_target())
 
         self._mob_repo.delete_by_status()
-
-        msg += self.passive_event(player, enemy, event.get('channel_id', 0))
 
         return msg
 
