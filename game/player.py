@@ -394,7 +394,7 @@ class Player(Character):
 
         return msg
 
-    # Отсутсвие активных действий игрока
+    # Отсутствие активных действий игрока
     def idle_action(self) -> str:
         msg = ""
         if self.has_enemy() and self.is_priority_target():
