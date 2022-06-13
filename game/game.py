@@ -75,7 +75,7 @@ class Game:
         if actions.get('!уклон', False):
             player.set_effect('dodged')
 
-        if (actions.get('!атакует', False) or actions.get('!стреляет', False) or actions.get('!колдует', False)) and player.has_enemy():
+        if not (actions.get('!атакует', False) or actions.get('!стреляет', False) or actions.get('!колдует', False)) and player.has_enemy():
             msg += player.idle_action()
 
         if actions.get('!осмотр', False):
