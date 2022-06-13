@@ -299,6 +299,8 @@ class Player(Character):
                 if escape <= 75:
                     self._e_status = 'не замечен'
                     return _msg_get_invis
+                else:
+                    return _msg_yet_followed
 
     # Помощь
     def help_action(self, player2: Character | None = None, enemy: Enemy | None = None) -> str:
