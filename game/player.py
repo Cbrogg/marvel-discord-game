@@ -21,6 +21,7 @@ _msg_attacked = "Вас атакует {name}!\n"
 _msg_followed = "К вам движется {name}.\n"
 _msg_no_target = "Нет цели для атаки.\n"
 _msg_lost_interest = "{name} потеряли к вам интерес.\n"
+_msg_yet_followed = "Вас всё ещё преследуют.\n"
 
 # Лечение
 _msg_max_healed = "Вы максимально вылечили {name}. Теперь {name} нужен отдых.\n"
