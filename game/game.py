@@ -80,6 +80,8 @@ class Game:
         if actions.get('!помогает', False):
             player2 = self._player_repo.get_by_player_id(event.get('player2_id', 0))
             enemy2 = self._mob_repo.get_by_id(player2.get_enemy_id())
+            if enemy2 is not None:
+                enemy2.set_priority_target(self._player_repo.get_by_player_id(enemy2.get_priority_target_id()))
             msg += player.help_action(player2, enemy2)
             msg += player.attack_action()
             if player2 is not None:
