@@ -45,7 +45,7 @@ _msg_self_defending = "Вы защищаетесь.\n"
 # Получение урона и текущий статус
 _msg_stat = "Текущий статус персонажа {name}: {status}.\n"
 _msg_fall = "{name} без сознания.\n"
-_msg_self_get_damage = 'Вы получили {damage} урона.\n'
+_msg_self_get_damage = 'Вы получили {damage} урона.'
 _msg_self_get_krit_damage = 'Разозлённый противник нанёс вам {damage} урона.\n'
 _msg_def_get_damage = '{defender_name} получил {damage} урона вместо {name}.\n'
 

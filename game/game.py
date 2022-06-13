@@ -82,15 +82,15 @@ class Game:
 
         if actions.get('!атакует', False):
             player.set_effect('mille_attack')
-            player.attack_action()
+            msg += player.attack_action()
 
         if actions.get('!стреляет', False):
             player.set_effect('range_attack')
-            player.attack_action()
+            msg += player.attack_action()
 
         if actions.get('!колдует', False):
             player.set_effect('magic_attack')
-            player.attack_action()
+            msg += player.attack_action()
 
         self._player_repo.update(player)
         if enemy is not None:
