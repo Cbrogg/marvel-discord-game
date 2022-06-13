@@ -274,7 +274,7 @@ class Player(Character):
     # Побег
     def run_away_action(self) -> str:
         if self.has_enemy():
-            e = self._enemy.get_type
+            e = self._enemy.get_type().get('no', 'Монстра')
             escape = random.randint(0, 100)
             if escape <= 80:
                 self._effects['escaped'] = True
