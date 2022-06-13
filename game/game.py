@@ -1,3 +1,5 @@
+import random
+
 from pymongo.database import Database
 from .repo import *
 from .location import Location
@@ -102,9 +104,40 @@ class Game:
 
         self._mob_repo.delete_by_status()
 
+        msg += self.passive_event(player, enemy, event.get('channel_id', 0))
+
         return msg
 
+    def passive_event(self, player: Player | None = None, enemy: Enemy | None = None, location: int = 0) -> str:
+        msg = ""
+        l = Location(location, self._mob_repo.select(location))
+        if not player.has_enemy():
+            notion = random.randint(1, 100)
+            if notion <= 50:
+                msg += _msg_hear_enemy.format(l.get_any_mob().get_type()['many'])
 
+            detection = random.randint(1, 100)
+
+            max_d = l.get_max_detection()
+            dc = player.stealth_chance(max_d)
+            detected = dc <= detection
+            if detected:
+                msg += _msg_detected
+                z = l.get_any_mob()
+                player.set_enemy(z)
+                z.in_chase()
+                msg += _msg_followed.format(name=z.get_name())
+                self._mob_repo.update(z)
+        else:
+            if player.get_enemy_status() == 'в погоне':
+                chase = random.randint(1, 100)
+                if chase < player.get_chase_escape_chance():
+                    enemy.in_combat()
+                    msg += _msg_caught.format(name=enemy.get_name())
+                    msg += player.take_damage(enemy.deal_damage())
+            self._mob_repo.update(enemy)
+        self._player_repo.update(player)
+        return msg
 # ======================================================================================================================
 
     # def on_message(self, message: discord.Message):

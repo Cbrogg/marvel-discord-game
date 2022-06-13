@@ -123,6 +123,9 @@ class Player(Character):
     def is_dead(self) -> bool:
         return True if self._hp <= 0 else False
 
+    def is_detected(self) -> bool:
+        return self._e_status == 'замечен'
+
     # Проверка, если ли враг у игрока
     def has_enemy(self) -> bool:
         if self._enemy is None:
