@@ -300,15 +300,18 @@ class Player(Character):
     def attack_action(self):
         msg = ""
         if self._effects.get('mille_attack', False):
+            self._effects.pop('mille_attack')
             if not self.is_priority_target():
                 self._enemy.inc_priority(self._player_id)
                 msg += _msg_take_target.format(enemy_name=self._enemy.get_name(), name=self._name)
             max_damage = self.max_mille_damage()
 
         elif self._effects.get('magic_attack', False):
+            self._effects.pop('magic_attack')
             max_damage = self.max_range_damage()
 
         elif self._effects.get('range_attack', False):
+            self._effects.pop('range_attack')
             max_damage = self.max_magic_damage()
 
         else:
@@ -317,6 +320,7 @@ class Player(Character):
         crit_m = 2
 
         if self._effects.get('dodged', False):
+            self._effects.pop('dodged')
             max_damage = int(max_damage / 2)
             crit_m = 4
 
@@ -327,6 +331,7 @@ class Player(Character):
 
         if self.is_priority_target():
             if self._effects.get('defending', False):
+                self._effects.pop('defending')
                 damage = int(damage / 2)
                 msg += self.take_damage(damage)
                 if not self.is_dead():
@@ -340,6 +345,7 @@ class Player(Character):
                         self.kill_enemy()
                     else:
                         if self._effects.get('dodged', False):
+                            self._effects.pop('dodged')
                             dodged = random.randint(1, 100) <= self.get_chase_escape_chance()
                             if not dodged:
                                 msg += _msg_not_dodge
@@ -350,6 +356,7 @@ class Player(Character):
                             msg += self.take_damage(damage)
                 else:
                     if self._effects.get('dodged', False):
+                        self._effects.pop('dodged')
                         dodged = random.randint(1, 100) <= self.get_chase_escape_chance()
                         if not dodged:
                             msg += self.take_damage(damage)
@@ -388,11 +395,11 @@ class Player(Character):
         msg = ""
         if self.has_enemy() and self.is_priority_target():
             damage = self._enemy.deal_damage()
-            if self._effects['defending']:
+            if self._effects.get('defending', False):
                 damage = int(damage / 2)
                 msg += self.take_damage(damage)
 
-            elif self._effects['dodged']:
+            elif self._effects.get('dodged', False):
                 dodged = random.randint(1, 100) <= self.get_chase_escape_chance()
                 if not dodged:
                     msg += _msg_not_dodge
