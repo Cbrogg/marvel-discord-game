@@ -151,6 +151,8 @@ class Player(Character):
         if self._enemy is not None:
             self._enemy = None
             self._enemy_id = ""
+        if self._enemy_id != "":
+            self._enemy_id = ""
 
     # Привязка моба к игроку
     def set_enemy(self, e: Enemy | None):

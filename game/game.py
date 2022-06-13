@@ -42,16 +42,20 @@ class Game:
         player: Player = self._player_repo.get_by_player_id(event.get('player_id', 0))
         enemy: Enemy = self._mob_repo.get_by_id(player.get_enemy_id())
         l = Location(event.get('channel_id', 0), self._mob_repo.select(event.get('channel_id', 0)))
+
+        msg = ""
+
         if enemy is not None:
             enemy.set_priority_target(self._player_repo.get_by_player_id(enemy.get_priority_target_id()))
             player.set_enemy(enemy)
+        if enemy is None and player.get_enemy_id() != "":
+            msg += _msg_helped
+            player.drop_enemy()
         if player is None:
             return _msg_no_id
         actions = event.get('actions', None)
         if actions is None:
             return _msg_no_action
-
-        msg = ""
 
         msg += self.passive_event(player, enemy, event.get('channel_id', 0))
 
