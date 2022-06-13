@@ -50,6 +50,10 @@ class Enemy(Character):
                 return pr
         return None
 
+    def get_priority_target_id(self) -> int:
+        p = self.get_max_priority()
+        return int(p.id)
+
     def priority_to_dict(self) -> dict:
         d = {}
         for pr in self._targets:

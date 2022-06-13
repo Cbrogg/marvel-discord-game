@@ -154,7 +154,7 @@ class Player(Character):
     # Проверка, является ли игрок приоритетной целью
     def is_priority_target(self) -> bool:
         if self._enemy is not None:
-            return str(self._player_id) == self._enemy_id.get_priority_target_id()
+            return str(self._player_id) == self._enemy.get_priority_target_id()
         else:
             return False
 
