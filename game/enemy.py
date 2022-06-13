@@ -40,7 +40,6 @@ class Enemy(Character):
         return max(self._targets)
 
     def get_priority_by_id(self, id: int) -> Priority | None:
-        pr = None
         for pr in self._targets:
             if pr.id == id:
                 return pr
@@ -58,7 +57,8 @@ class Enemy(Character):
 
     def targets_from_dict(self, d: dict):
         for key in d.keys():
-            self._targets.append(Priority(int(key), d[key]))
+            if self.get_priority_by_id(int(key)) is not None:
+                self._targets.append(Priority(int(key), d[key]))
 
     def inc_priority(self, id=0) -> Priority:
         pr = max(self._targets)
@@ -80,7 +80,6 @@ class Enemy(Character):
         else:
             if self.get_priority_by_id(id) is None:
                 self._targets.append(Priority(id))
-
 
     def del_target(self, id: int):
         p = self.get_priority_by_id(id)
