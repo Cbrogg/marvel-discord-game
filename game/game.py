@@ -167,6 +167,8 @@ class Game:
                     enemy.in_combat()
                     msg += _msg_caught.format(name=enemy.get_name())
                     msg += player.take_damage(enemy.deal_damage())
+                else:
+                    msg += _msg_yet_followed
             self._mob_repo.update(enemy)
         self._player_repo.update(player)
         return msg

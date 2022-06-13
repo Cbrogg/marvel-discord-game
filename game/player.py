@@ -412,6 +412,8 @@ class Player(Character):
     # Отсутствие активных действий игрока
     def idle_action(self) -> str:
         msg = ""
+        if self.get_enemy_status() != 'в бою':
+            return ""
         if self.has_enemy() and self.is_priority_target():
             damage = self._enemy.deal_damage()
             if self._effects.get('defending', False):
