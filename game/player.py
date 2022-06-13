@@ -300,7 +300,7 @@ class Player(Character):
                 return _msg_help.format(helper_name=self.get_name(), name=player2.get_name())
 
     # Атака
-    def attack_action(self):
+    def attack_action(self) -> str:
         msg = ""
         if self._effects.get('mille_attack', False):
             self._effects.pop('mille_attack')
@@ -318,7 +318,7 @@ class Player(Character):
             max_damage = self.max_range_damage()
 
         else:
-            return
+            return ""
 
         crit_m = 2
 
@@ -386,8 +386,8 @@ class Player(Character):
             if self.is_dead():
                 self._e_status = 'не замечен'
                 msg += _msg_lost_interest.format(name=self._enemy.get_type())
-        else:
-            # msg += self._enemy.deal_damage_to_priority_target().format(name=self._name)
+        else:  # TODO
+            msg += self._enemy.deal_damage_to_priority_target().format(name=self._name)
             msg += self._enemy.take_damage(damage_player)
             if self._enemy.is_dead():
                 self.kill_enemy()

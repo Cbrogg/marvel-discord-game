@@ -1,7 +1,6 @@
 import random
 
 from .character import Character
-# from .player import Player
 from .enums import Gender, EnemyCombatStatus, EnemyHealthStatus
 from .priority import Priority
 
@@ -18,9 +17,7 @@ class Enemy(Character):
     _level: int
     _channel: int
     _targets: list[Priority] = []
-    # _priority_target: Player | None = None
-
-
+    _priority_target: Character | None = None
 
     def __init__(self, data: dict, ch_id=None):
         super().__init__(data)
@@ -30,11 +27,11 @@ class Enemy(Character):
         self._channel = data.get('channel', ch_id)
         self.targets_from_dict(data.get('targets', {}))
 
-    # def get_priority_target(self) -> Player:
-    #     return self._priority_target
-    #
-    # def set_priority_target(self, target: Player):
-    #     self._priority_target = target
+    def get_priority_target(self) -> Character:
+        return self._priority_target
+
+    def set_priority_target(self, target: Character):
+        self._priority_target = target
 
     def get_reaction(self) -> int:
         return self._avatar.special.reaction()
@@ -136,10 +133,10 @@ class Enemy(Character):
 
         return damage
 
-    # def deal_damage_to_priority_target(self) -> str:
-    #     msg = self._priority_target.take_damage(int(self.deal_damage()/3))
-    #     msg = msg[:-1] + "вместо {name}. \n"
-    #     return msg
+    def deal_damage_to_priority_target(self) -> str:
+        msg = self._priority_target.take_damage(int(self.deal_damage()/3))
+        msg = msg[:-1] + "вместо {name}. \n"
+        return msg
 
     def is_dead(self) -> bool:
         return True if self._hp <= 0 else False

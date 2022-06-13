@@ -3,6 +3,9 @@ import uuid
 from .enums import HealthStatus
 from .special import Special
 
+_msg_fall = "{name} без сознания.\n"
+_msg_self_get_damage = '{name} получил(а) {damage} урона.'
+
 
 class Avatar:
     _id: str
@@ -113,7 +116,18 @@ class Character:
             else:
                 self._hp += heal
 
+    # Получение урона игроком
+    def take_damage(self, damage: int) -> str:  # TODO
+        d = damage - self._avatar.special.e if damage > self._avatar.special.e else 0
+        msg = _msg_self_get_damage.format(name=self.get_name(), damage=d)
+        self._hp -= d
+        if self._hp <= 0:
+            msg += _msg_fall.format(name=self.get_name())
+            self._hp = 0
+        else:
+            msg += '\n'
 
+        return msg
 
     def is_healable(self) -> bool:
         return self._hp < int(self.max_hp() * 4 / 5)
