@@ -61,7 +61,6 @@ class Game:
 
         if len(actions) == 0 and player.has_enemy():
             msg += player.idle_action()
-            return msg
 
         if actions.get('!осмотр', False):
             msg += player.look_around_action(Location(event.get('channel_id', 0), self._mob_repo.select(event.get('channel_id', 0))))
