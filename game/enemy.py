@@ -82,13 +82,13 @@ class Enemy(Character):
         self._targets.remove(p)
 
     def in_combat(self):
-        self._c_status = EnemyCombatStatus.COMBAT
+        self._status = 'в бою'
 
     def in_chase(self):
-        self._c_status = EnemyCombatStatus.CHASE
+        self._status = 'в погоне'
 
     def idle(self):
-        self._c_status = EnemyCombatStatus.IDLE
+        self._status = 'ждет'
 
     def export(self) -> dict:
         s = super().export()
@@ -131,7 +131,7 @@ class Enemy(Character):
         dice = random.randint(1, 20)
         damage = 0 if dice < 10 else max_damage * dice / 20
 
-        return damage
+        return int(damage)
 
     def deal_damage_to_priority_target(self) -> str:
         msg = self._priority_target.take_damage(int(self.deal_damage()/3))
