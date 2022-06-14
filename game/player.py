@@ -439,6 +439,8 @@ class Player(Character):
                     msg += _msg_dodge
             else:
                 msg += self.take_damage(damage)
+
+        msg += _msg_stat.format(name=self._name, status=self.status())
         return msg
 
     # def on_message(self, message: discord.Message):
