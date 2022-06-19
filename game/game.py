@@ -26,6 +26,7 @@ _msg_followed = "К вам движется {name}.\n"
 _msg_yet_followed = "Вас всё ещё преследуют.\n"
 _msg_caught = "Вас догнал {name}!\n"
 _msg_helped = "Вам помогли избавиться от противника.\n"
+_msg_change_loc = "Вы сменили локацию. Противник не последовал за вами.\n"
 
 
 class Game:
@@ -45,8 +46,6 @@ class Game:
         player: Player = self._player_repo.get_by_player_id(event.get('player_id', 0))
         enemy: Enemy = self._mob_repo.get_by_id(player.get_enemy_id())
         l = Location(event.get('channel_id', 0), self._mob_repo.select(event.get('channel_id', 0)))
-
-        msg = ""
 
         if enemy is not None:
             enemy.set_priority_target(self._player_repo.get_by_player_id(enemy.get_priority_target_id()))
