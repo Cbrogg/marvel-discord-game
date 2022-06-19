@@ -46,23 +46,28 @@ class Game:
         player: Player = self._player_repo.get_by_player_id(event.get('player_id', 0))
         enemy: Enemy = self._mob_repo.get_by_id(player.get_enemy_id())
         msg = ""
-        if enemy is not None:
-            if event.get('channel_id', 0) != enemy.get_channel():
-                msg += _msg_change_loc
-                player.drop_enemy()
-                return msg
 
         l = Location(event.get('channel_id', 0), self._mob_repo.select(event.get('channel_id', 0)))
 
         if enemy is not None:
             enemy.set_priority_target(self._player_repo.get_by_player_id(enemy.get_priority_target_id()))
             player.set_enemy(enemy)
+            if event.get('channel_id', 0) != enemy.get_channel():
+                msg += _msg_change_loc
+                player.drop_enemy()
+                self._player_repo.update(player)
+                self._mob_repo.update(enemy)
+                return msg
+
         if enemy is None and player.get_enemy_id() != "":
             msg += _msg_helped
             player.drop_enemy()
+
         if player is None:
             return _msg_no_id
+
         actions = event.get('actions', None)
+
         if actions is None:
             return _msg_no_action
 
@@ -85,7 +90,7 @@ class Game:
             msg += player.idle_action()
 
         if actions.get('!осмотр', False):
-            msg += player.look_around_action(Location(event.get('channel_id', 0), self._mob_repo.select(event.get('channel_id', 0))))
+            msg += player.look_around_action(l)
 
         if actions.get('!лечит', False):
             player2 = self._player_repo.get_by_player_id(event.get('player2_id', 0))
