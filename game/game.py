@@ -50,6 +50,7 @@ class Game:
             if event.get('channel_id', 0) != enemy.get_channel():
                 msg += _msg_change_loc
                 player.drop_enemy()
+                return
 
         l = Location(event.get('channel_id', 0), self._mob_repo.select(event.get('channel_id', 0)))
 
