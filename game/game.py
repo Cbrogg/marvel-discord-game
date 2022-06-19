@@ -45,6 +45,12 @@ class Game:
     def exec_event(self, event: dict) -> str:
         player: Player = self._player_repo.get_by_player_id(event.get('player_id', 0))
         enemy: Enemy = self._mob_repo.get_by_id(player.get_enemy_id())
+        msg = ""
+        if enemy is not None:
+            if event.get('channel_id', 0) != enemy.get_channel():
+                msg += _msg_change_loc
+                player.drop_enemy()
+
         l = Location(event.get('channel_id', 0), self._mob_repo.select(event.get('channel_id', 0)))
 
         if enemy is not None:

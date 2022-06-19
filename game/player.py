@@ -155,7 +155,6 @@ class Player(Character):
         if self._enemy is not None:
             self._enemy.del_target(self._player_id)
             self._enemy = None
-            self._enemy_id = ""
         if self._enemy_id != "":
             self._enemy_id = ""
 

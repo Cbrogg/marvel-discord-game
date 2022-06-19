@@ -15,7 +15,7 @@ class Enemy(Character):
     _gender: Gender
     _status: str
     _level: int
-    _channel: int
+    _channel: int | None
     _targets: list[Priority] = []
     _priority_target: Character | None = None
 
@@ -26,6 +26,9 @@ class Enemy(Character):
         self._level = data.get('level', 1)
         self._channel = data.get('channel', ch_id)
         self.targets_from_dict(data.get('targets', {}))
+
+    def get_channel(self) -> int:
+        return self._channel
 
     def get_priority_target(self) -> Character:
         return self._priority_target
