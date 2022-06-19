@@ -24,9 +24,9 @@ _msg_hear_enemy = "В округе слышны {type}.\n"
 _msg_detected = "Вас заметили. \n"
 _msg_followed = "К вам движется {name}.\n"
 _msg_yet_followed = "Вас всё ещё преследуют.\n"
-_msg_caught = "Вас догнал {name}!\n"
+_msg_caught = "Вас догнал {name}! "
 _msg_helped = "Вам помогли избавиться от противника.\n"
-_msg_change_loc = "Вы сменили локацию. Противник не последовал за вами.\n"
+_msg_change_loc = "Вы сменили локацию. Противник не последовал за вами. Можно отдышаться\n"
 
 
 class Game:
