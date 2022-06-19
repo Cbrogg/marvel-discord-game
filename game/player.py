@@ -444,10 +444,6 @@ class Player(Character):
         return msg
 
     # def on_message(self, message: discord.Message):
-    #
-    #
-    #
-    #
     #     if not player.has_enemy():
     #         if self.is_channel_clean(message.channel.id):
     #             return
