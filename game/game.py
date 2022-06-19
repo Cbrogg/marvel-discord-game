@@ -71,6 +71,8 @@ class Game:
         if actions is None:
             return _msg_no_action
 
+        player.rest()
+
         if actions.get('!защищает', False):
             player2 = self._player_repo.get_by_player_id(event.get('player2_id', 0))
             if player2 is not None:
@@ -156,6 +158,7 @@ class Game:
         msg = ""
         if player.is_escaped():
             player.remove_effect('escaped')
+            self._player_repo.update(player)
             return msg
         l = Location(location, self._mob_repo.select(location))
         if not player.has_enemy():
