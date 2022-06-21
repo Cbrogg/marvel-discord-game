@@ -13,7 +13,7 @@ __title__ = 'marvel_game'
 __author__ = 'TonyStark&KateFuller'
 __license__ = 'MIT'
 __copyright__ = 'Copyright 2015-present TonyStark&KateFuller'
-__version__ = '0.0.1a'
+__version__ = '0.0.3a'
 
 __path__ = __import__('pkgutil').extend_path(__path__, __name__)
 
