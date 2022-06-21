@@ -4,7 +4,7 @@ Marvel Game API
 
 A basic Marvel Game API.
 
-:copyright: (c) 2015-present TonyStark&KateFuller
+:copyright: (c) 2021-present TonyStark&KateFuller
 :license: MIT, see LICENSE for more details.
 
 """
