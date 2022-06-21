@@ -1,136 +1,137 @@
 import random
 
 from .character import Character
-from .enums import Gender, EnemyCombatStatus, EnemyHealthStatus
+from .enums import Gender, EnemyCombatStatus
 from .priority import Priority
 
-_msg_take_damage_male = "{} получил {} урона."
-_msg_take_damage_female = "{} получила {} урона."
+msg_take_damage_male = "{} получил {} урона."
+msg_take_damage_female = "{} получила {} урона."
 
-_msg_dead_male = " {} мертв.\n"
-_msg_dead_female = " {} мертва.\n"
+msg_dead_male = " {} мертв.\n"
+msg_dead_female = " {} мертва.\n"
 
 
 class Enemy(Character):
-    _gender: Gender
-    _status: str
-    _level: int
-    _channel: int | None
-    _targets: list[Priority] = []
-    _priority_target: Character | None = None
+    gender: Gender
+    c_status: str
+    level: int
+    channel: int | None
+    targets: set[Priority] = set()
+    priority_target: Character | None = None
 
     def __init__(self, data: dict, ch_id=None):
         super().__init__(data)
-        self._status = data.get('status', 'ждет')
-        self._gender = data.get('gender', Gender.MALE)
-        self._level = data.get('level', 1)
-        self._channel = data.get('channel', ch_id)
+        self.c_status = data.get('status', 'ждет')
+        self.gender = data.get('gender', Gender.MALE)
+        self.level = data.get('level', 1)
+        self.channel = data.get('channel', ch_id)
         self.targets_from_dict(data.get('targets', {}))
 
     def get_channel(self) -> int:
-        return self._channel
+        return self.channel
 
     def get_priority_target(self) -> Character:
-        return self._priority_target
+        return self.priority_target
 
     def set_priority_target(self, target: Character):
-        self._priority_target = target
+        self.priority_target = target
 
     def get_reaction(self) -> int:
-        return self._avatar.special.reaction()
+        return self.avatar.special.reaction()
 
     def get_max_priority(self) -> Priority:
-        return max(self._targets)
+        return max(self.targets)
 
-    def get_priority_by_id(self, id: int) -> Priority | None:
-        for pr in self._targets:
-            if pr.id == id:
+    def get_priority_by_id(self, p_id: int) -> Priority | None:
+        for pr in self.targets:
+            if pr.p_id == p_id:
                 return pr
         return None
 
     def get_priority_target_id(self) -> int:
-        if len(self._targets) == 0:
+        if len(self.targets) == 0:
             return -1
         p = self.get_max_priority()
-        return int(p.id)
+        return int(p.p_id)
 
     def priority_to_dict(self) -> dict:
         d = {}
-        for pr in self._targets:
-            d[str(pr.id)] = pr.value
+        for pr in self.targets:
+            d[str(pr.p_id)] = pr.value
         return d
 
     def targets_from_dict(self, d: dict):
         for key in d.keys():
             if self.get_priority_by_id(int(key)) is not None:
-                self._targets.append(Priority(int(key), d[key]))
+                self.targets.add(Priority(int(key), d[key]))
 
-    def inc_priority(self, id=0) -> Priority:
-        pr = max(self._targets)
-        self._targets.remove(self.get_priority_by_id(id))
-        new_pr = Priority(id, pr.value + 1)
-        self._targets.append(new_pr)
+    def inc_priority(self, p_id=0) -> Priority:
+        pr = max(self.targets)
+        self.targets.discard(self.get_priority_by_id(p_id))
+        new_pr = Priority(p_id, pr.value + 1)
+        self.targets.add(new_pr)
         return new_pr
 
-    def dec_priority(self, id):
-        pr = self.get_priority_by_id(id)
-        self._targets.remove(pr)
+    def dec_priority(self, p_id):
+        pr = self.get_priority_by_id(p_id)
+        self.targets.discard(pr)
         pr -= 1
-        self._targets.append(pr)
+        self.targets.add(pr)
 
-    def add_target(self, id: int):
-        if len(self._targets) == 0:
-            if self.get_priority_by_id(id) is None:
-                self._targets.append(Priority(id, 1))
+    def add_target(self, p_id: int):
+        if len(self.targets) == 0:
+            if self.get_priority_by_id(p_id) is None:
+                self.targets.add(Priority(p_id, 1))
         else:
-            if self.get_priority_by_id(id) is None:
-                self._targets.append(Priority(id))
+            if self.get_priority_by_id(p_id) is None:
+                self.targets.add(Priority(p_id))
 
-    def del_target(self, id: int):
-        p = self.get_priority_by_id(id)
+    def del_target(self, p_id: int):
+        p = self.get_priority_by_id(p_id)
         if p is not None:
-            self._targets.remove(p)
-        if len(self._targets) == 0:
-            self._status = 'ждет'
+            self.targets.discard(p)
+        if len(self.targets) == 0:
+            self.c_status = 'ждет'
 
     def in_combat(self):
-        self._status = 'в бою'
+        self.c_status = 'в бою'
 
     def in_chase(self):
-        self._status = 'в погоне'
+        self.c_status = 'в погоне'
 
     def idle(self):
-        self._status = 'ждет'
+        self.c_status = 'ждет'
 
     def export(self) -> dict:
         s = super().export()
-        s['gender'] = self._gender
-        s['level'] = self._level
-        s['channel'] = self._channel
+        s['gender'] = self.gender
+        s['level'] = self.level
+        s['channel'] = self.channel
         s['targets'] = self.priority_to_dict()
-        s['status'] = self._status
+        s['status'] = self.c_status
 
         return s
 
     def max_hp(self) -> int:
-        return int(5 + (self._avatar.special.s + self._avatar.special.e * 3))
+        return int(5 + (self.avatar.special.s + self.avatar.special.e * 3))
 
     def take_damage(self, damage: int) -> str:
-        d = damage - self._avatar.special.e if damage > self._avatar.special.e else 0
-        msg = _msg_take_damage_male.format(self._name, d) if self._gender == Gender.MALE else _msg_take_damage_female.format(self._name, d)
-        self._hp -= d
-        if self._hp <= 0:
-            self._status = 'мертв'
-            msg += _msg_dead_male.format(self._name) if self._gender == Gender.MALE else _msg_dead_female.format(self._name)
-            self._hp = 0
-            self._h_status = EnemyHealthStatus.DEAD
+        d = damage - self.avatar.special.e if damage > self.avatar.special.e else 0
+        msg = msg_take_damage_male.format(self.name,
+                                          d) if self.gender == Gender.MALE else msg_take_damage_female.format(self.name,
+                                                                                                              d)
+        self.hp -= d
+        if self.hp <= 0:
+            self.c_status = 'мертв'
+            msg += msg_dead_male.format(self.name) if self.gender == Gender.MALE else msg_dead_female.format(self.name)
+            self.hp = 0
         else:
             msg += '\n'
 
         return msg
 
     def deal_damage(self) -> int:
-        match self._status:
+        match self.c_status:
             case EnemyCombatStatus.MILLE:
                 max_damage = int(self.max_mille_damage())
             case EnemyCombatStatus.RANGE:
@@ -146,32 +147,29 @@ class Enemy(Character):
         return int(damage)
 
     def deal_damage_to_priority_target(self) -> str:
-        msg = self._priority_target.take_damage(int(self.deal_damage()/3))
+        msg = self.priority_target.take_damage(int(self.deal_damage() / 3))
         msg = msg[:-2] + " вместо {name}. \n"
         return msg
 
     def is_dead(self) -> bool:
-        return True if self._hp <= 0 else False
+        return True if self.hp <= 0 else False
 
     def heal(self, heal):
-        self._hp += heal
-        if self._hp > self.max_hp():
-            self._hp = self.max_hp()
+        self.hp += heal
+        if self.hp > self.max_hp():
+            self.hp = self.max_hp()
 
     def get_combat_status(self) -> str:
-        return str(self._status)
-
-    def get_health_status(self) -> str:
-        return str(self._h_status)
+        return str(self.c_status)
 
     def is_healthy(self) -> bool:
-        return self._hp >= self.max_hp()
+        return self.hp >= self.max_hp()
 
     def is_idle(self) -> bool:
-        return self._status == 'ждет'
+        return self.c_status == 'ждет'
 
     def detection(self) -> int:
-        return self._avatar.special.detection()
+        return self.avatar.special.detection()
 
 
 class EnemyGroup:
