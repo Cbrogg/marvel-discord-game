@@ -1,3 +1,4 @@
+import random
 import uuid
 
 from .enums import HealthStatus
@@ -120,17 +121,48 @@ class Character:
                 self.hp += heal
 
     # Получение урона игроком
-    def take_damage(self, damage: int) -> str:  # TODO
+    def take_damage(self, damage: int) -> int:
+        if damage == 0:
+            return 0
+
+        if self.effects.get('defending', False):
+            self.effects.pop('defending')
+            damage = int(damage/2)
+
         d = damage - self.avatar.special.e if damage > self.avatar.special.e else 0
-        msg = _msg_self_get_damage.format(name=self.get_name(), damage=d)
+
         self.hp -= d
         if self.hp <= 0:
-            msg += _msg_fall.format(name=self.get_name())
             self.hp = 0
-        else:
-            msg += '\n'
 
-        return msg
+        return d
+
+    def deal_damage(self) -> (int, int):
+        if self.effects.get('mille_attack', False):
+            self.effects.pop('mille_attack')
+            max_damage = self.max_mille_damage()
+        elif self.effects.get('magic_attack', False):
+            self.effects.pop('magic_attack')
+            max_damage = self.max_magic_damage()
+        elif self.effects.get('range_attack', False):
+            self.effects.pop('range_attack')
+            max_damage = self.max_range_damage()
+        else:
+            max_damage = self.max_range_damage()
+
+        dice = random.randint(0, 50)
+        damage = max_damage/2 + max_damage * dice / 100
+
+        if self.effects.get('dodged', False):
+            damage = int(damage / 2)
+            crit_m = 4
+        else:
+            crit_m = 2
+
+        if dice == 50:
+            damage *= crit_m
+
+        return int(damage), int(dice/50*20)
 
     def is_healable(self) -> bool:
         return self.hp < int(self.max_hp() * 4 / 5)

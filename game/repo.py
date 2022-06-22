@@ -112,9 +112,12 @@ class PlayerRepo(Repo):
         p: dict = self._source.find_one({'player_id': id})
         if p is None:
             return None
-        player = Player(p)
-        player.set_avatar(self._avatar_repo.get_active_by_player_id(id))
+        player = Player(p, self._avatar_repo.get_active_by_player_id(id))
         return player
+
+    def get_name_by_id(self, id) -> str | None:
+        p: dict = self._source.find_one({'player_id': id})
+        return p.get("name", None)
 
 
 class MobRepo(Repo):

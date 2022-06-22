@@ -87,7 +87,7 @@ class Player(Character):
             self.enemy = None
             self.enemy_id = ""
             self.kills += 1
-            self.e_status = 'не замечен' if random.randint(0, 100) > 50 else 'замечен'
+            self.e_status = 'не замечен'
 
     # Удаление моба из врагов игрока. Сброс противника
     def drop_enemy(self):
