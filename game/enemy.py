@@ -121,21 +121,6 @@ class Enemy(Character):
     def max_hp(self) -> int:
         return int(5 + (self.avatar.special.s + self.avatar.special.e * 3))
 
-    def take_damage(self, damage: int) -> str:
-        d = damage - self.avatar.special.e if damage > self.avatar.special.e else 0
-        msg = msg_take_damage_male.format(self.name,
-                                          d) if self.gender == Gender.MALE else msg_take_damage_female.format(self.name,
-                                                                                                              d)
-        self.hp -= d
-        if self.hp <= 0:
-            self.c_status = 'мертв'
-            msg += msg_dead_male.format(self.name) if self.gender == Gender.MALE else msg_dead_female.format(self.name)
-            self.hp = 0
-        else:
-            msg += '\n'
-
-        return msg
-
     def is_dead(self) -> bool:
         return True if self.hp <= 0 else False
 
