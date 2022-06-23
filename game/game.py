@@ -410,7 +410,7 @@ class Game:
 
         enemy_damage, enemy_dice = enemy.deal_damage()
 
-        if player.is_priority_target():
+        if player.player_id == enemy.get_priority_target_id():
             if player.effects.get('dodged', False):
                 player.effects.pop('dodged')
                 dodged = random.randint(1, 100) <= player.get_chase_escape_chance()
