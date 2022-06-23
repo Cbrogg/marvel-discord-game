@@ -26,6 +26,7 @@ class Enemy(Character):
         self.level = data.get('level', 1)
         self.channel = data.get('channel', ch_id)
         self.targets_from_dict(data.get('targets', {}))
+        return
 
     def get_channel(self) -> int:
         return self.channel
@@ -70,6 +71,7 @@ class Enemy(Character):
         for key in d.keys():
             if self.get_priority_by_id(int(key)) is not None:
                 self.targets.append(Priority(int(key), d[key]))
+        return
 
     def inc_priority(self, p_id=0) -> Priority:
         pr = max(self.targets)
