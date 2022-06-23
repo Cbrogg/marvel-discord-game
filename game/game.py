@@ -365,11 +365,11 @@ class Game:
 
         player_damage, player_dice = player.deal_damage()
 
-        if player.enemy.is_in_chase():
+        if enemy.is_in_chase():
             player_damage *= 2
             result["in_chase_damage"] = 1
 
-        player.enemy.in_combat()
+        enemy.in_combat()
 
         damage = enemy.take_damage(player_damage)
         if enemy.is_dead():
