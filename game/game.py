@@ -573,6 +573,7 @@ class Game:
 
                 case "player_name", "search_count", "enemy_type", "enemy_name":
                     msg += ""
+                    break
 
                 case _:
                     msg += f"unknown flag {flag}\n"
