@@ -129,7 +129,7 @@ class Game:
             player.set_effect('dodged')
 
         if actions.get('!осмотр', False):
-            if player.has_enemy():
+            if enemy is not None:
                 result.update((("search", -1),))
             else:
                 loc = Location(event.get('channel_id', 0), self.mob_repo.select(event.get('channel_id', 0)))
