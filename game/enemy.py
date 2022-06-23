@@ -16,7 +16,7 @@ class Enemy(Character):
     c_status: str
     level: int
     channel: int | None
-    targets: list[Priority]
+    targets: list[Priority] = []
     priority_target: Character | None = None
 
     def __init__(self, data: dict, ch_id=None):
