@@ -415,6 +415,7 @@ class Game:
                 player.effects.pop('dodged')
                 dodged = random.randint(1, 100) <= player.get_chase_escape_chance()
                 if dodged:
+                    self.player_repo.update(player)
                     result["enemy_attack"] = 0
                     result["dodged"] = 1
                     return result
