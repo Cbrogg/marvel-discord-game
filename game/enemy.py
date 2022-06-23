@@ -69,7 +69,7 @@ class Enemy(Character):
 
     def targets_from_dict(self, d: dict):
         for key in d.keys():
-            if self.get_priority_by_id(int(key)) is not None:
+            if self.get_priority_by_id(int(key)) is None:
                 self.targets.append(Priority(int(key), d[key]))
         return
 
