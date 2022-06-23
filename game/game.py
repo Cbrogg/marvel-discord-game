@@ -568,8 +568,8 @@ class Game:
                         case 3:
                             msg += Messages.msg_count_enemy.format(count=result["search_count"], type=result["enemy_type"])
 
-                case "player_name", "search_count", "enemy_type":
-                    pass
+                case "player_name", "search_count", "enemy_type", "enemy_name":
+                    msg += ""
 
                 case _:
                     msg += f"unknown flag {flag}\n"
