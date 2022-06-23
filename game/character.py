@@ -76,6 +76,9 @@ class Character:
     def set_avatar(self, avatar: Avatar):
         self.avatar = avatar
 
+    def get_reaction(self) -> int:
+        return self.avatar.special.reaction()
+
     def max_hp(self) -> int:
         return int(pow(100, (1 + (self.avatar.special.e / 30))) / 2 + self.avatar.special.s)
 

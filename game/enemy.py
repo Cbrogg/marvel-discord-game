@@ -30,14 +30,20 @@ class Enemy(Character):
     def get_channel(self) -> int:
         return self.channel
 
+    def is_in_chase(self) -> bool:
+        return self.c_status == 'в погоне'
+
+    def is_in_combat(self) -> bool:
+        return self.c_status == 'в бою'
+
+    def is_idle(self) -> bool:
+        return self.c_status == 'ждет'
+
     def get_priority_target(self) -> Character:
         return self.priority_target
 
     def set_priority_target(self, target: Character):
         self.priority_target = target
-
-    def get_reaction(self) -> int:
-        return self.avatar.special.reaction()
 
     def get_max_priority(self) -> Priority:
         return max(self.targets)
