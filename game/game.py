@@ -127,6 +127,7 @@ class Game:
 
         if actions.get('!уклон', False):
             player.set_effect('dodged')
+            self.player_repo.update(player)
 
         if actions.get('!осмотр', False):
             if enemy is not None:
@@ -148,14 +149,17 @@ class Game:
 
         if actions.get('!атакует', False):
             player.set_effect('mille_attack')
+            self.player_repo.update(player)
             result.update(self.attack_action(event))
 
         if actions.get('!стреляет', False):
             player.set_effect('range_attack')
+            self.player_repo.update(player)
             result.update(self.attack_action(event))
 
         if actions.get('!колдует', False):
             player.set_effect('magic_attack')
+            self.player_repo.update(player)
             result.update(self.attack_action(event))
 
         if enemy is not None and not enemy_action_finished:
