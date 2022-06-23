@@ -1,6 +1,6 @@
 import random
 
-from .character import Character
+from .character import Character, Avatar
 from .enemy import Enemy
 from .location import Location
 
@@ -13,8 +13,8 @@ class Player(Character):
     e_status: str
     player_class: str
 
-    def __init__(self, data: dict, enemy: Enemy | None = None):
-        super().__init__(data)
+    def __init__(self, data: dict, avatar: Avatar | None = None, enemy: Enemy | None = None):
+        super().__init__(data, avatar)
         self.player_id = data.get('player_id', 0)
         self.kills = data.get('kills', 0)
         self.enemy_id = data.get('enemy_id', "")
