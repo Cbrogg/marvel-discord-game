@@ -13,13 +13,15 @@ class Messages:
     # Ошибки обработки сообщения
     msg_no_id = "В событии нет ID персонажа"
     msg_no_action = "В событии нет ни одного действия"
+    msg_no_player = "Игрок неизвестен"
+    msg_no_loc = "Локация неизвестна"
 
     # Ошибки управления игрой
     msg_player_not_find = "Персонажа нет в игре"
     msg_player_in_game = "Персонаж уже в игре"
 
     # Осмотр
-    msg_clean_location = "Вокруг нет ни следа противника.\n"
+    msg_clean_location = "Вокруг нет противников.\n"
     msg_count_enemy = "Осмотревшись, вы насчитали {count} {type}.\n"
     msg_hear_enemy = "В округе слышны {type}.\n"
     msg_detected = "Вас заметили. \n"
@@ -32,6 +34,8 @@ class Messages:
     msg_need_rest = "Персонаж {name} максимально вылечен. Теперь {name} нужен отдых.\n"
     msg_self_need_rest = "Вы максимально вылечены. Теперь вам необходим отдых. \n"
     msg_defend_not_needed = "Ваша защита не требуется.\n"
+    msg_escape_not_needed = "Вам не от кого бежать.\n"
+    msg_self_defend_not_needed = "Вам не требуется защита.\n"
     msg_cant_help = "Нет возможности помочь, вас атакуют.\n"
     msg_help_not_needed = "Ваша помощь не требуется.\n"
     msg_cleared_location = "Локация зачищена.\n"
@@ -40,7 +44,7 @@ class Messages:
     msg_attacked = "Вас атакует {name}!\n"
     msg_followed = "К вам движется {name}.\n"
     msg_no_target = "Нет цели для атаки.\n"
-    msg_lost_interest = "{name} потеряли к вам интерес.\n"
+    msg_lost_interest = "{enemy_name} потеряли интерес к {name}.\n"
     msg_yet_followed = "Вас всё ещё преследуют.\n"
 
     # Лечение
@@ -58,9 +62,9 @@ class Messages:
     msg_attack = "Вы атаковали {name_r}.\n"
 
     # Защита, помощь и внимание
-    msg_defend_player = "{defender_name} защищает {name}.\n"
+    msg_defend_player = "Вы защищаете {name}.\n"
     msg_take_target = "{enemy_name} сосредоточил внимание на {name}.\n"
-    msg_help = "{helper_name} помогает {name}.\n"
+    msg_help = "Вы помогаете {name}.\n"
     msg_self_defending = "Вы защищаетесь.\n"
 
     # Получение урона и текущий статус
@@ -71,7 +75,7 @@ class Messages:
     msg_def_get_damage = '{defender_name} получил {damage} урона вместо {name}.\n'
 
     # Побег из боя или уклонение
-    msg_run_away = "Вы убежали от {name}.\n"
+    msg_run_away = "Вы субежали от противника.\n"
     msg_get_invis = "Вас потеряли из виду.\n"
     msg_not_run = "Убежать не вышло.\n"
     msg_not_dodge = "Вы не смогли уклониться. "
