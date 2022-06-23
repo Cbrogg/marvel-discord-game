@@ -193,7 +193,9 @@ class Game:
                 m.in_chase()
                 self.mob_repo.update(m)
                 self.player_repo.update(player)
-                return result
+
+        return result
+
 
     # Лечение
     def heal_action(self, event: dict) -> dict:
