@@ -16,7 +16,7 @@ class Enemy(Character):
     c_status: str
     level: int
     channel: int | None
-    targets = set()
+    targets: list[Priority]
     priority_target: Character | None = None
 
     def __init__(self, data: dict, ch_id=None):
@@ -69,33 +69,33 @@ class Enemy(Character):
     def targets_from_dict(self, d: dict):
         for key in d.keys():
             if self.get_priority_by_id(int(key)) is not None:
-                self.targets.add(Priority(int(key), d[key]))
+                self.targets.append(Priority(int(key), d[key]))
 
     def inc_priority(self, p_id=0) -> Priority:
         pr = max(self.targets)
-        self.targets.discard(self.get_priority_by_id(p_id))
+        self.targets.remove(self.get_priority_by_id(p_id))
         new_pr = Priority(p_id, pr.value + 1)
-        self.targets.add(new_pr)
+        self.targets.append(new_pr)
         return new_pr
 
     def dec_priority(self, p_id):
         pr = self.get_priority_by_id(p_id)
-        self.targets.discard(pr)
+        self.targets.remove(pr)
         pr -= 1
-        self.targets.add(pr)
+        self.targets.append(pr)
 
     def add_target(self, p_id: int):
         if len(self.targets) == 0:
             if self.get_priority_by_id(p_id) is None:
-                self.targets.add(Priority(p_id, 1))
+                self.targets.append(Priority(p_id, 1))
         else:
             if self.get_priority_by_id(p_id) is None:
-                self.targets.add(Priority(p_id))
+                self.targets.append(Priority(p_id))
 
     def del_target(self, p_id: int):
         p = self.get_priority_by_id(p_id)
         if p is not None:
-            self.targets.discard(p)
+            self.targets.remove(p)
         if len(self.targets) == 0:
             self.c_status = 'ждет'
 
