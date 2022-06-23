@@ -145,7 +145,6 @@ class Game:
             result.update(self.run_away_action(event))
 
         result.update(self.passive_event(event))
-        enemy: Enemy = player.enemy
 
         if actions.get('!атакует', False):
             player.set_effect('mille_attack')
