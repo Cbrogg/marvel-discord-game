@@ -116,7 +116,7 @@ class Game:
 
         player.rest()
 
-        if enemy.get_reaction() > player.get_reaction():
+        if enemy is not None and enemy.get_reaction() > player.get_reaction():
             result.update(self.enemy_action(event))
             enemy_action_finished = True
         else:
