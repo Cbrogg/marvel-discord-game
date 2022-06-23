@@ -91,29 +91,18 @@ class Game:
         self.mob_repo = MobRepo(db['zombies'], self.mob_avatar_repo)
 
     # Обработка входящего сообщения
-    def exec_event(self, event: dict) -> str:  # TODO
+    def exec_event(self, event: dict) -> dict:  # TODO
         player: Player = self.player_repo.get_by_player_id(event.get('player_id', 0))
         enemy: Enemy = self.mob_repo.get_by_id(player.get_enemy_id())
-        msg = ""
-
-        loc = Location(event.get('channel_id', 0), self.mob_repo.select(event.get('channel_id', 0)))
-
-        if enemy is not None:
-            enemy.set_priority_target(self.player_repo.get_by_player_id(enemy.get_priority_target_id()))
-            player.set_enemy(enemy)
-            if event.get('channel_id', 0) != enemy.get_channel():
-                msg += Messages.msg_change_loc
-                player.drop_enemy()
-                self.player_repo.update(player)
-                self.mob_repo.update(enemy)
-                return msg
-
-        if enemy is None and player.get_enemy_id() != "":
-            msg += Messages.msg_helped
-            player.drop_enemy()
 
         if player is None:
-            return Messages.msg_no_id
+            return {"player_error": -1}
+
+        result = {}
+
+        if enemy is None and player.get_enemy_id() != "":
+            result['dropped'] = 1
+            player.drop_enemy()
 
         actions = event.get('actions', None)
 
@@ -123,90 +112,46 @@ class Game:
         player.rest()
 
         if actions.get('!защищает', False):
-            player2 = self.player_repo.get_by_player_id(event.get('player2_id', 0))
-            if player2 is not None:
-                enemy2 = self.mob_repo.get_by_id(player2.get_enemy_id())
-            else:
-                enemy2 = None
-            msg += self.defend_action(player2, enemy2)
-            if player2 is not None:
-                self.player_repo.update(player2)
-            if enemy2 is not None:
-                self.mob_repo.update(enemy2)
+            result.update((self.defend_action(event),))
 
         if actions.get('!уклон', False):
             player.set_effect('dodged')
 
-        if not (actions.get('!атакует', False) or
-                actions.get('!стреляет', False) or
-                actions.get('!колдует', False)) and player.has_enemy():
-            msg += self.idle_action(player)
-
         if actions.get('!осмотр', False):
             if player.has_enemy():
-                msg += Messages.msg_dont_look
+                result.update((("search", -1),))
             else:
-                msg += loc.look_around()
+                loc = Location(event.get('channel_id', 0), self.mob_repo.select(event.get('channel_id', 0)))
+                result.update((loc.look_around(),))
 
         if actions.get('!лечит', False):
-            player2 = self.player_repo.get_by_player_id(event.get('player2_id', 0))
-            msg += self.heal_action(player, player2)
-            if player2 is not None:
-                self.player_repo.update(player2)
+            result.update((self.heal_action(event),))
 
         if actions.get('!помогает', False):
-            player2 = self.player_repo.get_by_player_id(event.get('player2_id', 0))
-            enemy2 = self.mob_repo.get_by_id(player2.get_enemy_id())
-            if enemy2 is not None:
-                enemy2.set_priority_target(self.player_repo.get_by_player_id(enemy2.get_priority_target_id()))
-            msg += self.assist_action(player2, enemy2)
-            msg += self.attack_action(player)
-            if player2 is not None:
-                self.player_repo.update(player2)
-            if enemy2 is not None:
-                self.mob_repo.update(enemy2)
+            result.update((self.assist_action(event),))
 
         if actions.get('!убегает', False):
-            msg += self.run_away_action(player)
+            result.update((self.run_away_action(event),))
 
-        msg += self.passive_event(player, enemy, event.get('channel_id', 0))
+        result.update((self.passive_event(event),))
 
         if actions.get('!атакует', False):
-            if not player.has_enemy():
-                enemy = loc.get_any_mob()
-                if enemy is not None:
-                    player.set_enemy(enemy)
-                    enemy.set_priority_target(self.player_repo.get_by_player_id(enemy.get_priority_target_id()))
             player.set_effect('mille_attack')
-            msg += self.attack_action(player)
+            result.update((self.attack_action(event),))
 
         if actions.get('!стреляет', False):
-            if not player.has_enemy():
-                enemy = loc.get_any_mob()
-                if enemy is not None:
-                    player.set_enemy(enemy)
-                    enemy.set_priority_target(self.player_repo.get_by_player_id(enemy.get_priority_target_id()))
             player.set_effect('range_attack')
-            msg += self.attack_action(player)
+            result.update((self.attack_action(event),))
 
         if actions.get('!колдует', False):
-            if not player.has_enemy():
-                enemy = loc.get_any_mob()
-                if enemy is not None:
-                    player.set_enemy(enemy)
-                    enemy.set_priority_target(self.player_repo.get_by_player_id(enemy.get_priority_target_id()))
             player.set_effect('magic_attack')
-            msg += self.attack_action(player)
+            result.update((self.attack_action(event),))
 
-        self.player_repo.update(player)
-        if enemy is not None:
-            self.mob_repo.update(enemy)
-            if enemy.get_priority_target() is not None:
-                self.player_repo.update(enemy.get_priority_target())
+        result.update((self.enemy_attack(event),))
 
         self.mob_repo.delete_by_status()
 
-        return msg
+        return result
 
     def passive_event(self, event: dict) -> (str, int):
         player: Player = self.player_repo.get_by_player_id(event.get('player_id', 0))

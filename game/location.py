@@ -70,9 +70,9 @@ class Location:
 
         return mob
 
-    def look_around(self) -> str:
+    def look_around(self) -> (str, int):
         if self.is_clean():
-            return _msg_clean_location
+            return "search", 0
 
         else:
             r = random.randint(1, 20)
@@ -81,9 +81,10 @@ class Location:
                 count += len(self._mobs[name])
 
             if r == 20:
-                return _msg_count_enemy.format(count=count, type=self.get_any_mob().get_type()['many'])
+                return "search_perfect", count
             elif 10 <= r < 20:
-                c = 'не больше десятка' if count < 10 else 'не меньше десятка'
-                return _msg_count_enemy.format(count=c, type=self.get_any_mob().get_type()['no'])
-            elif r < 10:
-                return _msg_hear_enemy.format(type=self.get_any_mob().get_type()['many'])
+                return "search_good", count
+            elif 1 < r < 10:
+                return "search_bad", count
+            else:
+                return "search_worst", r
