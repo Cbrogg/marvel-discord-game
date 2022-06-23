@@ -145,6 +145,7 @@ class Game:
             result.update(self.run_away_action(event))
 
         result.update(self.passive_event(event))
+        enemy: Enemy = player.enemy
 
         if actions.get('!атакует', False):
             player.set_effect('mille_attack')
@@ -158,7 +159,7 @@ class Game:
             player.set_effect('magic_attack')
             result.update(self.attack_action(event))
 
-        if not enemy_action_finished:
+        if enemy is not None and not enemy_action_finished:
             result.update(self.enemy_action(event))
 
         self.mob_repo.delete_by_status()
