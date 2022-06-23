@@ -197,7 +197,6 @@ class Game:
 
         return result
 
-
     # Лечение
     def heal_action(self, event: dict) -> dict:
         player: Player = self.player_repo.get_by_player_id(event.get('player_id', 0))
@@ -570,7 +569,7 @@ class Game:
                             msg += Messages.msg_count_enemy.format(count=result["search_count"], type=result["enemy_type"])
 
                 case _:
-                    msg += f"unknown flag {flag}"
+                    msg += f"unknown flag {flag}\n"
 
         # =========================
 

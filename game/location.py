@@ -81,10 +81,10 @@ class Location:
                 count += len(self._mobs[name])
 
             if r == 20:
-                return {"search": 3, "search_count": count, "enemy_type": self.get_any_mob().get_type()["many"]}
+                return {"search": 3, "search_count": count, "enemy_type": self.get_any_mob().get_type()["no"]}
             elif 10 <= r < 20:
-                return {"search": 2, "search_count": count, "enemy_type": self.get_any_mob().get_type()["many"]}
+                return {"search": 2, "search_count": count, "enemy_type": self.get_any_mob().get_type()["no"]}
             elif 1 < r < 10:
-                return {"search": 1, "enemy_type": self.get_any_mob().get_type()["many"]}
+                return {"search": 1, "enemy_type": self.get_any_mob().get_type()["no"]}
             else:
                 return {"search": 0}
