@@ -75,7 +75,7 @@ class Messages:
     msg_def_get_damage = '{defender_name} получил {damage} урона вместо {name}.\n'
 
     # Побег из боя или уклонение
-    msg_run_away = "Вы субежали от противника.\n"
+    msg_run_away = "Вы убежали от противника.\n"
     msg_get_invis = "Вас потеряли из виду.\n"
     msg_not_run = "Убежать не вышло.\n"
     msg_not_dodge = "Вы не смогли уклониться. "
@@ -571,7 +571,7 @@ class Game:
                         case 3:
                             msg += Messages.msg_count_enemy.format(count=result["search_count"], type=result["enemy_type"])
 
-                case "player_name", "search_count", "enemy_type", "enemy_name":
+                case "player_name", "search_count", "enemy_type", "enemy_name", "in_chase_damage", "player_status", "enemy_dead":
                     msg += ""
                     break
 
