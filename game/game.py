@@ -201,6 +201,9 @@ class Game:
                 self.mob_repo.update(enemy)
                 self.player_repo.update(player)
 
+        result['player_status'] = player.status()
+        result['end'] = True
+
         return result
 
     # Лечение
@@ -212,6 +215,7 @@ class Game:
             result["player2_name"] = player2.name
             if not player2.is_healable():
                 result["heal_other"] = -1
+                result['player2_status'] = player2.status()
                 return result
             else:
                 healing = random.randint(1, 20)
@@ -221,6 +225,7 @@ class Game:
                     player2.heal(healing)
                 self.player_repo.update(player2)
                 result["heal_other"] = healing
+                result['player2_status'] = player2.status()
                 return result
         else:
             if not player.is_healable():
@@ -259,6 +264,7 @@ class Game:
             enemy2: Enemy | None = self.mob_repo.get_by_id(player.get_enemy_id())
             if enemy2 is None:
                 result["defend_other"] = 0
+                result['player2_status'] = player2.status()
                 return result
             else:
                 result["enemy2_name"] = enemy2.name
@@ -276,6 +282,7 @@ class Game:
 
                 result["defend_other"] = 1
                 result["new_priority"] = 1
+                result['player2_status'] = player2.status()
                 return result
 
     # Побег
@@ -323,6 +330,7 @@ class Game:
             enemy2: Enemy | None = self.mob_repo.get_by_id(player.get_enemy_id())
             if enemy2 is None:
                 result["assist"] = 0
+                result['player2_status'] = player2.status()
                 return result
             else:
                 result["enemy2_name"] = enemy2.name
@@ -336,6 +344,7 @@ class Game:
                 self.player_repo.update(player)
                 self.mob_repo.update(enemy2)
 
+                result['player2_status'] = player2.status()
                 result["assist"] = 0
                 return result
 
