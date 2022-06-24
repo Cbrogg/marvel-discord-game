@@ -352,7 +352,7 @@ class Game:
 
     # Атака
     def attack_action(self, event: dict, player: Player, enemy: Enemy | None = None) -> dict:
-
+        result = {}
         if enemy is None:
             loc = Location(event.get('channel_id', 0), self.mob_repo.select(event.get('channel_id', 0)))
             if loc is None:
@@ -364,8 +364,8 @@ class Game:
                     player.set_enemy(enemy)
                 else:
                     return {"player_attack": -1}
-
-        result = {}
+        else:
+            result["enemy_name"] = enemy.name
 
         if player.effects.get('mille_attack', False):
             enemy.inc_priority(player.player_id)
