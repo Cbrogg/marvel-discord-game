@@ -121,13 +121,13 @@ class Game:
         player.rest()
 
         if enemy is not None and enemy.get_reaction() > player.get_reaction():
-            result.update(self.enemy_action(event))
+            result.update(self.enemy_action(event, player, enemy))
             enemy_action_finished = True
         else:
             enemy_action_finished = False
 
         if actions.get('!защищает', False):
-            result.update(self.defend_action(event))
+            result.update(self.defend_action(event, player, enemy))
 
         if actions.get('!уклон', False):
             player.set_effect('dodged')
@@ -141,33 +141,33 @@ class Game:
                 result.update(loc.look_around())
 
         if actions.get('!лечит', False):
-            result.update(self.heal_action(event))
+            result.update(self.heal_action(event, player))
 
         if actions.get('!помогает', False):
-            result.update(self.assist_action(event))
+            result.update(self.assist_action(event, player, enemy))
 
         if actions.get('!убегает', False):
-            result.update(self.run_away_action(event))
+            result.update(self.run_away_action(event, player, enemy))
 
-        result.update(self.passive_event(event))
+        result.update(self.passive_event(event, player, enemy))
 
         if actions.get('!атакует', False):
             player.set_effect('mille_attack')
             self.player_repo.update(player)
-            result.update(self.attack_action(event))
+            result.update(self.attack_action(event, player, enemy))
 
         if actions.get('!стреляет', False):
             player.set_effect('range_attack')
             self.player_repo.update(player)
-            result.update(self.attack_action(event))
+            result.update(self.attack_action(event, player, enemy))
 
         if actions.get('!колдует', False):
             player.set_effect('magic_attack')
             self.player_repo.update(player)
-            result.update(self.attack_action(event))
+            result.update(self.attack_action(event, player, enemy))
 
         if enemy is not None and not enemy_action_finished:
-            result.update(self.enemy_action(event))
+            result.update(self.enemy_action(event, player, enemy))
 
         self.mob_repo.delete_by_status()
 
