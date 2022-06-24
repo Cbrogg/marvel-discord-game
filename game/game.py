@@ -539,7 +539,15 @@ class Game:
                                 else:
                                     msg += Messages.msg_stat.format(name=result["priority_target"], status=result["player2_status"])
                             else:
-                                msg += Messages.msg_get_damage.format(name=result["enemy_name"], count=result["enemy_attack"])
+                                if result.get("dodged") is not None:
+                                    match result["dodged"]:
+                                        case 1:
+                                            msg += Messages.msg_dodge
+                                        case 0:
+                                            msg += Messages.msg_not_dodge
+                                            msg += Messages.msg_get_damage.format(name=result["enemy_name"], count=result["player_attack"])
+                                else:
+                                    msg += Messages.msg_get_damage.format(name=result["enemy_name"], count=result["player_attack"])
                                 if result["player_dead"]:
                                     msg += Messages.msg_fall.format(name="Вы")
                                     msg += Messages.msg_lost_interest.format(enemy_name=result["enemy_name"], name="вам")
