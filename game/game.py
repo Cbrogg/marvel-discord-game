@@ -423,7 +423,6 @@ class Game:
                     result["enemy_attack"] = 0
                     result["dodged"] = 1
                     return result
-            self.player_repo.update(player)
 
             damage = player.take_damage(enemy_damage)
 
@@ -433,6 +432,8 @@ class Game:
             if player.is_dead():
                 enemy.del_target(player.player_id)
                 self.mob_repo.update(enemy)
+
+            self.player_repo.update(player)
 
             return result
         else:
