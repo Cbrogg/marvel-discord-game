@@ -404,6 +404,9 @@ class Game:
         else:
             result["enemy_name"] = enemy.name
 
+        if enemy.is_dead():
+            return {}
+
         if enemy.is_in_chase():
             chase = random.randint(0, 100)
             chased = chase > 30
