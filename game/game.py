@@ -112,6 +112,7 @@ class Game:
         if enemy is None and player.get_enemy_id() != "":
             result['dropped'] = 1
             player.drop_enemy()
+            self.player_repo.update(player)
 
         actions = event.get('actions', None)
 
@@ -193,11 +194,11 @@ class Game:
             result["detected"] = int(detected)
 
             if detected:
-                m = loc.get_any_mob()
-                result["enemy_name"] = m.name
-                player.set_enemy(m)
-                m.in_chase()
-                self.mob_repo.update(m)
+                enemy = loc.get_any_mob()
+                result["enemy_name"] = enemy.name
+                player.set_enemy(enemy)
+                enemy.in_chase()
+                self.mob_repo.update(enemy)
                 self.player_repo.update(player)
 
         return result
