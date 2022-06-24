@@ -587,13 +587,11 @@ class Game:
                                 msg += Messages.msg_count_enemy.format(count="не больше десятка ", type=result["enemy_type"])
                         case 3:
                             msg += Messages.msg_count_enemy.format(count=result["search_count"], type=result["enemy_type"])
-
-                case "end":
-                    msg += Messages.msg_stat.format(name=result["player_name"], status=result["player_status"])
-
                 case _:
                     pass
 
         # =========================
+
+        msg += Messages.msg_stat.format(name=result["player_name"], status=result["player_status"])
 
         return msg
