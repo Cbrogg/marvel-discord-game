@@ -445,8 +445,6 @@ class Game:
             result["enemy_attack"] = damage
             result["priority_target"] = player2.name
 
-            self.player_repo.update(player2)
-
             result["player_dead"] = int(player2.is_dead())
             if player2.is_dead():
                 enemy.del_target(player2.player_id)
@@ -454,6 +452,8 @@ class Game:
                 result["player2_dead"] = int(player2.is_dead())
 
             result["player2_status"] = player2.status()
+
+            self.player_repo.update(player2)
 
             return result
 
