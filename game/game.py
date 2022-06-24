@@ -549,9 +549,9 @@ class Game:
                                             msg += Messages.msg_dodge
                                         case 0:
                                             msg += Messages.msg_not_dodge
-                                            msg += Messages.msg_get_damage.format(name=result["enemy_name"], count=result["player_attack"])
+                                            msg += Messages.msg_get_damage.format(name=result["enemy_name"], count=result["enemy_attack"])
                                 else:
-                                    msg += Messages.msg_get_damage.format(name=result["enemy_name"], count=result["player_attack"])
+                                    msg += Messages.msg_get_damage.format(name=result["enemy_name"], count=result["enemy_attack"])
                                 if result.get("player_dead", 0):
                                     msg += Messages.msg_fall.format(name="Вы")
                                     msg += Messages.msg_lost_interest.format(enemy_name=result["enemy_name"], name="вам")
