@@ -382,6 +382,7 @@ class Game:
         damage = enemy.take_damage(player_damage)
         if enemy.is_dead():
             player.kill_enemy()
+            enemy.dead()
 
         result["player_attack"] = damage
         result["enemy_dead"] = int(enemy.is_dead())

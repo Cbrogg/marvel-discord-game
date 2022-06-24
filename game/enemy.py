@@ -137,11 +137,11 @@ class Enemy(Character):
     def is_healthy(self) -> bool:
         return self.hp >= self.max_hp()
 
-    def is_idle(self) -> bool:
-        return self.c_status == 'ждет'
-
     def detection(self) -> int:
         return self.avatar.special.detection()
+
+    def dead(self):
+        self.c_status = 'мертв'
 
 
 class EnemyGroup:
