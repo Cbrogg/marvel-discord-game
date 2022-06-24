@@ -96,8 +96,8 @@ class Game:
 
     # Обработка входящего сообщения
     def exec_event(self, event: dict) -> dict:
-        player: Player = self.player_repo.get_by_player_id(event.get('player_id', 0))
-        enemy: Enemy = self.mob_repo.get_by_id(player.get_enemy_id())
+        enemy: Enemy = self.mob_repo.get_by_id(self.player_repo.get_enemy_id_by_player_id(event.get('player_id', 0)))
+        player: Player = self.player_repo.get_by_player_id(event.get('player_id', 0), enemy)
         result = {}
 
         if player is None:
@@ -173,9 +173,7 @@ class Game:
 
         return result
 
-    def passive_event(self, event: dict) -> dict:
-        player: Player = self.player_repo.get_by_player_id(event.get('player_id', 0))
-        enemy: Enemy | None = self.mob_repo.get_by_id(player.get_enemy_id())
+    def passive_event(self, event: dict, player: Player, enemy: Enemy | None = None) -> dict:
         result = {}
 
         if player.is_escaped():
@@ -205,8 +203,7 @@ class Game:
         return result
 
     # Лечение
-    def heal_action(self, event: dict) -> dict:
-        player: Player = self.player_repo.get_by_player_id(event.get('player_id', 0))
+    def heal_action(self, event: dict, player: Player) -> dict:
         player2: Player = self.player_repo.get_by_player_id(event.get('player2_id', 0))
         result = {}
 
@@ -241,10 +238,8 @@ class Game:
                 return result
 
     # Защита
-    def defend_action(self, event: dict) -> dict:
-        player: Player = self.player_repo.get_by_player_id(event.get('player_id', 0))
+    def defend_action(self, event: dict, player: Player, enemy: Enemy | None = None) -> dict:
         player2: Player | None = self.player_repo.get_by_player_id(event.get('player2_id', 0))
-        enemy: Enemy | None = self.mob_repo.get_by_id(player.get_enemy_id())
 
         result = {}
 
@@ -283,9 +278,7 @@ class Game:
                 return result
 
     # Побег
-    def run_away_action(self, event: dict) -> dict:
-        player: Player = self.player_repo.get_by_player_id(event.get('player_id', 0))
-        enemy: Enemy | None = self.mob_repo.get_by_id(player.get_enemy_id())
+    def run_away_action(self, event: dict, player: Player, enemy: Enemy | None = None) -> dict:
         result = {}
 
         if player is None:
@@ -311,9 +304,7 @@ class Game:
         return result
 
     # Помощь
-    def assist_action(self, event: dict) -> dict:
-        player: Player = self.player_repo.get_by_player_id(event.get('player_id', 0))
-        enemy: Enemy | None = self.mob_repo.get_by_id(player.get_enemy_id())
+    def assist_action(self, event: dict, player: Player, enemy: Enemy | None = None) -> dict:
         result = {}
 
         if enemy is not None:
@@ -348,9 +339,7 @@ class Game:
                 return result
 
     # Атака
-    def attack_action(self, event: dict) -> dict:
-        player: Player = self.player_repo.get_by_player_id(event.get('player_id', 0))
-        enemy: Enemy | None = self.mob_repo.get_by_id(player.get_enemy_id())
+    def attack_action(self, event: dict, player: Player, enemy: Enemy | None = None) -> dict:
 
         if enemy is None:
             loc = Location(event.get('channel_id', 0), self.mob_repo.select(event.get('channel_id', 0)))
@@ -394,9 +383,7 @@ class Game:
 
         return result
 
-    def enemy_action(self, event: dict) -> dict:
-        player: Player = self.player_repo.get_by_player_id(event.get('player_id', 0))
-        enemy: Enemy | None = self.mob_repo.get_by_id(player.get_enemy_id())
+    def enemy_action(self, event: dict, player: Player, enemy: Enemy | None = None) -> dict:
         result = {}
 
         if enemy is None:

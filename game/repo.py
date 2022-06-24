@@ -106,18 +106,22 @@ class PlayerRepo(Repo):
         return None if p is None else Player(p)
 
     # Выбор игрока по дискордному ID
-    def get_by_player_id(self, id: int) -> Player | None:
+    def get_by_player_id(self, id: int, enemy: Enemy | None = None) -> Player | None:
         if id == 0:
             return None
         p: dict = self._source.find_one({'player_id': id})
         if p is None:
             return None
-        player = Player(p, self._avatar_repo.get_active_by_player_id(id))
+        player = Player(p, self._avatar_repo.get_active_by_player_id(id), enemy)
         return player
 
     def get_name_by_id(self, id) -> str | None:
         p: dict = self._source.find_one({'player_id': id})
         return p.get("name", None)
+
+    def get_enemy_id_by_player_id(self, id):
+        p: dict = self._source.find_one({'player_id': id})
+        return p.get("enemy_id", None)
 
 
 class MobRepo(Repo):
