@@ -364,8 +364,8 @@ class Game:
                     player.set_enemy(enemy)
                 else:
                     return {"player_attack": -1}
-        else:
-            result["enemy_name"] = enemy.name
+
+        result["enemy_name"] = enemy.name
 
         if player.effects.get('mille_attack', False):
             enemy.inc_priority(player.player_id)
