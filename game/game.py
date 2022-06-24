@@ -531,7 +531,7 @@ class Game:
                         case -1:
                             return Messages.msg_clean_location
                         case _:
-                            msg += Messages.msg_get_damage.format(name=result["enemy_name"],count=result["player_attack"])
+                            msg += Messages.msg_get_damage.format(name=result["enemy_name"], count=result["player_attack"])
                             if result["enemy_dead"]:
                                 msg += Messages.msg_kill.format(name=result["enemy_name"])
 

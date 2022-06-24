@@ -121,7 +121,7 @@ class PlayerRepo(Repo):
 
     def get_enemy_id_by_player_id(self, id):
         p: dict = self._source.find_one({'player_id': id})
-        return p.get("enemy_id", None)
+        return p.get("enemy_id", "")
 
 
 class MobRepo(Repo):
