@@ -482,7 +482,8 @@ class Game:
                         case 20:
                             msg += Messages.msg_max_healed.format(name=result["player2_name"])
                         case _:
-                            msg += Messages.msg_healed.format(name=result["player2_name"],heal=result["heal_other"])
+                            msg += Messages.msg_healed.format(name=result["player2_name"], heal=result["heal_other"])
+                    msg += Messages.msg_stat.format(name=result["player2_name"], status=result["player2_status"])
 
                 case "heal_self":
                     match result["heal_self"]:
@@ -557,8 +558,7 @@ class Game:
                                 if result.get("player_dead", 0):
                                     msg += Messages.msg_fall.format(name="Вы")
                                     msg += Messages.msg_lost_interest.format(enemy_name=result["enemy_name"], name="вам")
-                                else:
-                                    msg += Messages.msg_stat.format(name=result["player_name"], status=result["player_status"])
+
 
                 case "new_priority":
                     msg += Messages.msg_take_target.format(enemy_name=result["enemy_name"],name=result["priority_target"])
@@ -586,8 +586,8 @@ class Game:
                         case 3:
                             msg += Messages.msg_count_enemy.format(count=result["search_count"], type=result["enemy_type"])
 
-                case "player_name", "search_count", "enemy_type", "enemy_name", "in_chase_damage", "player_status", "enemy_dead", "dodged":
-                    msg += ""
+                case "end":
+                    msg += Messages.msg_stat.format(name=result["player_name"], status=result["player_status"])
 
                 case _:
                     pass
