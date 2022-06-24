@@ -105,6 +105,10 @@ class Game:
         else:
             result["player_name"] = player.name
 
+        if player.effects.get("dodged", False):
+            player.remove_effect("dodged")
+            self.player_repo.update(player)
+
         if enemy is None and player.get_enemy_id() != "":
             result['dropped'] = 1
             player.drop_enemy()
@@ -548,7 +552,7 @@ class Game:
                                             msg += Messages.msg_get_damage.format(name=result["enemy_name"], count=result["player_attack"])
                                 else:
                                     msg += Messages.msg_get_damage.format(name=result["enemy_name"], count=result["player_attack"])
-                                if result["player_dead"]:
+                                if result.get("player_dead", 0):
                                     msg += Messages.msg_fall.format(name="Вы")
                                     msg += Messages.msg_lost_interest.format(enemy_name=result["enemy_name"], name="вам")
                                 else:
