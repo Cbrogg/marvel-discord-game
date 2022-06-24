@@ -539,7 +539,7 @@ class Game:
                     match result["enemy_attack"]:
                         case _:
                             if result.get("priority_target") is not None:
-                                msg += Messages.msg_def_get_damage.format(defender_name=result["priority_target"], damage=result["enemy_attack"])
+                                msg += Messages.msg_def_get_damage.format(defender_name=result["priority_target"], damage=result["enemy_attack"], name=result["player_name"])
                                 if result["player_dead"]:
                                     msg += Messages.msg_fall.format(name=result["priority_target"])
                                     msg += Messages.msg_lost_interest.format(enemy_name=result["enemy_name"], name=result["priority_target"])
