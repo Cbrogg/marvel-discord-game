@@ -138,8 +138,9 @@ class Game:
             if enemy is not None:
                 result.update((("search", -1),))
             else:
-                loc = Location(event.get('channel_id', 0), self.mob_repo.select(event.get('channel_id', 0)))
-                result.update(loc.look_around())
+                # loc = Location(event.get('channel_id', 0), self.mob_repo.select())
+                result.update(self.look_around_action(event))
+
 
         if actions.get('!лечит', False):
             result.update(self.heal_action(event, player))
@@ -176,6 +177,27 @@ class Game:
 
         return result
 
+    def look_around_action(self, event: dict) -> dict:
+        ch_id = event.get('channel_id', 0)
+        if self.mob_repo.is_clean(ch_id):
+            return {"search": 0}
+
+        counters = self.mob_repo.get_mobs_counters(ch_id)
+        count = 0
+        for key in counters:
+            count += counters[key]
+
+        r = random.randint(1, 20)
+
+        if r == 20:
+            return {"search": 3, "search_count": count, "enemy_type": self.mob_repo.get_next_idle_mob(ch_id).get_type()["no"]}
+        elif 10 <= r < 20:
+            return {"search": 2, "search_count": count, "enemy_type": self.mob_repo.get_next_idle_mob(ch_id).get_type()["no"]}
+        elif 1 < r < 10:
+            return {"search": 1, "enemy_type": self.mob_repo.get_next_idle_mob(ch_id).get_type()["no"]}
+        else:
+            return {"search": 0}
+
     def passive_event(self, event: dict, player: Player, enemy: Enemy | None = None) -> dict:
         result = {}
 
@@ -190,13 +212,14 @@ class Game:
                 return {"no_loc_err": -1}
 
             detection = random.randint(1, 100)
-            max_d = loc.get_max_detection()
+            max_d = 47  # TODO
             dc = player.stealth_chance(max_d)
             detected = dc <= detection
+            ch_id = event.get('channel_id', 0)
             result["detected"] = int(detected)
 
             if detected:
-                enemy = loc.get_any_mob()
+                enemy = self.mob_repo.get_next_idle_mob(ch_id)
                 result["enemy_name"] = enemy.name
                 player.set_enemy(enemy)
                 enemy.in_chase()

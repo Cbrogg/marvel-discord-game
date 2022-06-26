@@ -1,6 +1,6 @@
 import random
 
-from .character import Character
+from .character import Character, Avatar
 from .enums import Gender, EnemyCombatStatus
 from .priority import Priority
 
@@ -19,8 +19,8 @@ class Enemy(Character):
     targets: list[Priority] = []
     priority_target: Character | None = None
 
-    def __init__(self, data: dict, ch_id=None):
-        super().__init__(data)
+    def __init__(self, data: dict, ch_id: int | None, avatar: Avatar | None = None):
+        super().__init__(data, avatar)
         self.c_status = data.get('status', 'ждет')
         self.gender = data.get('gender', Gender.MALE)
         self.level = data.get('level', 1)
