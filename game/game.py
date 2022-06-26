@@ -179,7 +179,7 @@ class Game:
 
         return result
 
-    def look_around_action(self, event: dict) -> dict:
+    def look_around_action(self, event: dict) -> dict: # +
         ch_id = event.get('channel_id', 0)
         if self.mob_repo.is_clean(ch_id):
             return {"search": 0}
@@ -233,7 +233,7 @@ class Game:
 
         return result
 
-    # Лечение
+    # Лечение +
     def heal_action(self, event: dict, player: Player) -> dict:
         player2: Player = self.player_repo.get_by_player_id(event.get('player2_id', 0))
         result = {}
@@ -270,7 +270,7 @@ class Game:
                 result["heal_self"] = healing
                 return result
 
-    # Защита
+    # Защита +
     def defend_action(self, event: dict, player: Player, enemy: Enemy | None = None) -> dict:
         player2: Player | None = self.player_repo.get_by_player_id(event.get('player2_id', 0))
 
@@ -313,7 +313,7 @@ class Game:
                 result['player2_status'] = player2.status()
                 return result
 
-    # Побег
+    # Побег +
     def run_away_action(self, event: dict, player: Player, enemy: Enemy | None = None) -> dict:
         result = {}
 
@@ -355,7 +355,7 @@ class Game:
             return result
         else:
             result["player2_name"] = player2.name
-            enemy2: Enemy | None = self.mob_repo.get_by_id(player.get_enemy_id())
+            enemy2: Enemy | None = self.mob_repo.get_by_id(player2.get_enemy_id())
             if enemy2 is None:
                 result["assist"] = 0
                 result['player2_status'] = player2.status()
@@ -376,7 +376,7 @@ class Game:
                 result["assist"] = 0
                 return result
 
-    # Атака
+    # Атака +
     def attack_action(self, event: dict, player: Player, enemy: Enemy | None = None) -> dict:
         result = {}
         if enemy is None:
