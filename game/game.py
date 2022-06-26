@@ -587,7 +587,6 @@ class Game:
                                     msg += Messages.msg_fall.format(name="Вы")
                                     msg += Messages.msg_lost_interest.format(enemy_name=result["enemy_name"], name="вам")
 
-
                 case "new_priority":
                     msg += Messages.msg_take_target.format(enemy_name=result["enemy_name"],name=result["priority_target"])
 
@@ -596,7 +595,7 @@ class Game:
                         case 0:
                             msg += Messages.msg_caught.format(name=result["enemy_name"])
                         case 1:
-                            msg += Messages.msg_followed.format(name=result["enemy_name"])
+                            msg += Messages.msg_followed.format(name=result["enemy_name"]) if not result.get("detected", 0) else ""
 
                 case "search":
                     match result["search"]:
