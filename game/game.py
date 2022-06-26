@@ -298,6 +298,7 @@ class Game:
                     result["enemy_name"] = enemy2.name
                     if enemy.id != enemy2.id:
                         enemy.del_target(player.player_id)
+                        player.drop_enemy()
                         player.set_enemy(enemy2)
                         self.mob_repo.update(enemy)
                 player.set_enemy(enemy2)
