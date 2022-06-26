@@ -396,6 +396,7 @@ class Game:
             enemy.inc_priority(player.player_id)
             enemy.set_priority_target(player)
             result["new_priority"] = 1
+            self.mob_repo.update(enemy)
 
         player_damage, player_dice = player.deal_damage()
 
@@ -588,7 +589,7 @@ class Game:
                                     msg += Messages.msg_lost_interest.format(enemy_name=result["enemy_name"], name="вам")
 
                 case "new_priority":
-                    msg += Messages.msg_take_target.format(enemy_name=result["enemy_name"],name=result["priority_target"])
+                    msg += Messages.msg_take_target.format(enemy_name=result["enemy_name"], name=result["priority_target"])
 
                 case "chased":
                     match result["chased"]:
