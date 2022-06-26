@@ -200,7 +200,8 @@ class MobRepo(Repo):
         self.source.delete_many({'status': status})
 
     def is_clean(self, ch_id: int) -> bool:
-        return self.source.count_documents({'channel_id': ch_id}) == 0
+        c = self.source.count_documents({'channel_id': ch_id})
+        return c == 0
 
     def get_next_idle_mob(self, ch_id) -> Enemy | None:
         m: dict = self.source.find_one({"channel": ch_id, "targets": {}})
