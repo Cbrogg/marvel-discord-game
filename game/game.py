@@ -393,10 +393,11 @@ class Game:
         result["enemy_name"] = enemy.name
 
         if player.effects.get('mille_attack', False):
-            enemy.inc_priority(player.player_id)
-            enemy.set_priority_target(player)
-            result["new_priority"] = 1
-            self.mob_repo.update(enemy)
+            if enemy.get_priority_target_id() != player.player_id:
+                enemy.inc_priority(player.player_id)
+                enemy.set_priority_target(player)
+                result["new_priority"] = 1
+                self.mob_repo.update(enemy)
 
         player_damage, player_dice = player.deal_damage()
 
