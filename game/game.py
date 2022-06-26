@@ -295,8 +295,8 @@ class Game:
             else:
                 player.effects['defending'] = True
                 if enemy is not None:
+                    result["enemy_name"] = enemy2.name
                     if enemy.id != enemy2.id:
-                        result["enemy_name"] = enemy2.name
                         enemy.del_target(player.player_id)
                         player.set_enemy(enemy2)
                         self.mob_repo.update(enemy)
