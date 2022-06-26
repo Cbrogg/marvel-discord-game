@@ -19,7 +19,7 @@ class Enemy(Character):
     targets: list[Priority] = []
     priority_target: Character | None = None
 
-    def __init__(self, data: dict, ch_id: int | None, avatar: Avatar | None = None):
+    def __init__(self, data: dict, ch_id: int | None = None, avatar: Avatar | None = None):
         super().__init__(data, avatar)
         self.c_status = data.get('status', 'ждет')
         self.gender = data.get('gender', Gender.MALE)

@@ -142,7 +142,7 @@ class MobRepo(Repo):
         p: dict = self.source.find_one({'_id': id})
         if p is None:
             return None
-        mob = Enemy(p)
+        mob = Enemy(p, p.get('channel'), self._avatar_repo.get_by_name(p.get('name', "")))
         avatar = self._avatar_repo.get_by_name(mob.get_name())
         mob.set_avatar(avatar)
         return mob
@@ -157,7 +157,7 @@ class MobRepo(Repo):
         else:
             enms = self.source.find({'channel': channel})
         for enemy in enms:
-            en = Enemy(enemy)
+            en = Enemy(enemy, channel, )
             a = self._avatar_repo.get_by_name(en.get_name())
             en.set_avatar(a)
             e.append(en)

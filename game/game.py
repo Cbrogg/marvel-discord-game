@@ -141,7 +141,6 @@ class Game:
                 # loc = Location(event.get('channel_id', 0), self.mob_repo.select())
                 result.update(self.look_around_action(event))
 
-
         if actions.get('!лечит', False):
             result.update(self.heal_action(event, player))
 
@@ -207,9 +206,9 @@ class Game:
             return result
 
         if enemy is None:
-            loc = Location(event.get('channel_id', 0), self.mob_repo.select(event.get('channel_id', 0)))
-            if loc is None:
-                return {"no_loc_err": -1}
+            # loc = Location(event.get('channel_id', 0), self.mob_repo.select(event.get('channel_id', 0)))
+            # if loc is None:
+            #     return {"no_loc_err": -1}
 
             detection = random.randint(1, 100)
             max_d = 47  # TODO
@@ -377,16 +376,17 @@ class Game:
     def attack_action(self, event: dict, player: Player, enemy: Enemy | None = None) -> dict:
         result = {}
         if enemy is None:
-            loc = Location(event.get('channel_id', 0), self.mob_repo.select(event.get('channel_id', 0)))
-            if loc is None:
-                return {"no_loc_error": -1}
+            # loc = Location(event.get('channel_id', 0), self.mob_repo.select(event.get('channel_id', 0)))
+            # if loc is None:
+            #     return {"no_loc_error": -1}
+            # else:
+            ch_id = event.get('channel_id', 0)
+            enemy = self.mob_repo.get_next_idle_mob(ch_id)
+            if enemy is not None:
+                enemy.set_priority_target(self.player_repo.get_by_player_id(enemy.get_priority_target_id()))
+                player.set_enemy(enemy)
             else:
-                enemy = loc.get_any_mob()
-                if enemy is not None:
-                    enemy.set_priority_target(self.player_repo.get_by_player_id(enemy.get_priority_target_id()))
-                    player.set_enemy(enemy)
-                else:
-                    return {"player_attack": -1}
+                return {"player_attack": -1}
 
         result["enemy_name"] = enemy.name
 
