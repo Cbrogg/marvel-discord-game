@@ -589,7 +589,7 @@ class Game:
                                     msg += Messages.msg_lost_interest.format(enemy_name=result["enemy_name"], name="вам")
 
                 case "new_priority":
-                    msg += Messages.msg_take_target.format(enemy_name=result["enemy_name"], name=result["priority_target"])
+                    msg += Messages.msg_take_target.format(enemy_name=result["enemy_name"], name=result["player_name"])
 
                 case "chased":
                     match result["chased"]:
