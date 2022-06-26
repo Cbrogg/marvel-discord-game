@@ -591,7 +591,7 @@ class Game:
                 case "chased":
                     match result["chased"]:
                         case 0:
-                            return Messages.msg_caught.format(name=result["enemy_name"])
+                            msg += Messages.msg_caught.format(name=result["enemy_name"])
                         case 1:
                             msg += Messages.msg_followed.format(name=result["enemy_name"])
 
