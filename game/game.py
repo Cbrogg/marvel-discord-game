@@ -172,6 +172,8 @@ class Game:
         if enemy is not None and not enemy_action_finished:
             result.update(self.enemy_action(event, player, enemy))
 
+        result["player_status"] = player.status()
+
         self.mob_repo.delete_by_status()
 
         return result
