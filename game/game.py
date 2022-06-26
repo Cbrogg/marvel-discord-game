@@ -147,6 +147,7 @@ class Game:
 
         if actions.get('!помогает', False):
             result.update(self.assist_action(event, player, enemy))
+            result.update(self.attack_action(event, player, enemy))
 
         if actions.get('!убегает', False):
             result.update(self.run_away_action(event, player, enemy))
@@ -373,7 +374,7 @@ class Game:
                 self.mob_repo.update(enemy2)
 
                 result['player2_status'] = player2.status()
-                result["assist"] = 0
+                result["assist"] = 1
                 return result
 
     # Атака +
