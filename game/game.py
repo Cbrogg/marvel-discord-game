@@ -293,10 +293,10 @@ class Game:
                 result['player2_status'] = player2.status()
                 return result
             else:
-                result["enemy2_name"] = enemy2.name
                 player.effects['defending'] = True
                 if enemy is not None:
                     if enemy.id != enemy2.id:
+                        result["enemy_name"] = enemy2.name
                         enemy.del_target(player.player_id)
                         player.set_enemy(enemy2)
                         self.mob_repo.update(enemy)
