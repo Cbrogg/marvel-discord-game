@@ -435,6 +435,7 @@ class Game:
             result["chased"] = int(chased)
             if not chased:
                 enemy.in_combat()
+                self.mob_repo.update(enemy)
             else:
                 return result
 
