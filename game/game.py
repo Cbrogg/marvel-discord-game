@@ -287,7 +287,7 @@ class Game:
                 return result
         else:
             result["player2_name"] = player2.name
-            enemy2: Enemy | None = self.mob_repo.get_by_id(player.get_enemy_id())
+            enemy2: Enemy | None = self.mob_repo.get_by_id(player2.get_enemy_id())
             if enemy2 is None:
                 result["defend_other"] = 0
                 result['player2_status'] = player2.status()
