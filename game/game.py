@@ -129,6 +129,7 @@ class Game:
 
         if actions.get('!защищает', False):
             result.update(self.defend_action(event, player, enemy))
+            enemy = player.enemy
 
         if actions.get('!уклон', False):
             player.set_effect('dodged')
