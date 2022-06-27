@@ -659,7 +659,7 @@ class Game:
                     pass
 
         # =========================
-
-        msg += Messages.msg_stat.format(name=result["player_name"], status=result["player_status"])
+        if msg != "":
+            msg += Messages.msg_stat.format(name=result["player_name"], status=result["player_status"])
 
         return msg
