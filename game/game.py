@@ -159,6 +159,7 @@ class Game:
 
         if actions.get('!убегает', False):
             result.update(self.run_away_action(event, player, enemy))
+            enemy = player.enemy
 
         result.update(self.passive_event(event, player, enemy))
         if enemy is None and player.enemy is not None:
