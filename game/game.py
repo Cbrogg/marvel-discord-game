@@ -222,7 +222,7 @@ class Game:
             result["detected"] = int(detected)
 
             if detected:
-                enemy = self.mob_repo.get_next_idle_mob(ch_id)
+                enemy = self.mob_repo.get_random_idle_mob(ch_id)
                 result["enemy_name"] = enemy.name
                 player.set_enemy(enemy)
                 enemy.in_chase()
@@ -340,7 +340,7 @@ class Game:
 
         return result
 
-    # Помощь
+    # Помощь +
     def assist_action(self, event: dict, player: Player, enemy: Enemy | None = None) -> dict:
         result = {}
 
@@ -386,7 +386,7 @@ class Game:
             #     return {"no_loc_error": -1}
             # else:
             ch_id = event.get('channel_id', 0)
-            enemy = self.mob_repo.get_next_idle_mob(ch_id)
+            enemy = self.mob_repo.get_random_idle_mob(ch_id)
             if enemy is not None:
                 enemy.set_priority_target(self.player_repo.get_by_player_id(enemy.get_priority_target_id()))
                 player.set_enemy(enemy)
@@ -422,6 +422,44 @@ class Game:
         self.player_repo.update(player)
 
         result["player_status"] = player.status()
+
+        return result
+
+    def deal_damage_to_another_player_action(self, event: dict, player: Player) -> dict:
+        """
+        Атака другого игрока
+        :param event:
+        :param player:
+        :return:
+        """
+        result = {}
+        player2: Player | None = self.player_repo.get_by_player_id(event.get('player2_id', 0))
+
+        if player2 is None:
+            result["no_player_error"] = -1
+            return result
+
+        player_damage, player_dice = player.deal_damage()
+
+        if player2.effects.get('mille_attack', False):
+            player_damage *= 2
+            result["in_chase_damage"] = 1
+
+        player2.in_combat()
+
+        damage = player2.take_damage(player_damage)
+        if player2.is_dead():
+            player.kill_enemy()
+            player2.dead()
+
+        result["player_attack"] = damage
+        result["player2_dead"] = int(player2.is_dead())
+
+        self.player_repo.update(player)
+        self.player_repo.update(player2)
+
+        result["player_status"] = player.status()
+        result["player2_status"] = player2.status()
 
         return result
 

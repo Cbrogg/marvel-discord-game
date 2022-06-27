@@ -144,9 +144,9 @@ class Enemy(Character):
     def dead(self):
         self.c_status = 'мертв'
 
-
-class EnemyGroup:
-    _leader: Enemy
-    _vanguard: list[Enemy]
-    _core: list[Enemy]
-    _rearguard: list[Enemy]
+    def fiction(self) -> int:
+        """
+        Возвращает фиктивный урон для проверки процесса боя.
+        :return:
+        """
+        return random.randint(1, self.max_hp())

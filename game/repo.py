@@ -225,13 +225,23 @@ class MobRepo(Repo):
         else:
             return count_map
 
-    # def get_any_mob(self, ch_id: int) -> Enemy | None:
-    #     if self.is_clean(ch_id):
-    #         return None
-    #
-    #     a = {}
-    #
-    #     while a.get('channel', 0) != 936972542286110780 and len(a.get("targets", {"a": 0})) != 0:
-    #         a = self.source.aggregate([{"$sample": {"size": 1}}]).next()
-    #
-    #     return mob
+    def get_mobs_counters_by_type(self, type: str, ch_id = 0) -> dict:
+        a = self.source.aggregate([{"$group": {"_id": {"name": "$name", "channel": "$channel"}, "count": {"$sum": 1}}}])
+        count_map = {}
+        for result in a:
+            if count_map.get(result["_id"]['channel']) is None:
+                count_map[result["_id"]['channel']] = {}
+            if result["_id"]["name"] == type:
+                count_map[result["_id"]['channel']][result["_id"]["name"]] = result['count']
+
+        if ch_id != 0:
+            return count_map.get(ch_id, {})
+        else:
+            return count_map
+
+    def get_random_idle_mob(self, ch_id: int) -> Enemy:
+        """Возвращает случайного простого моба в канале"""
+        mobs = self.select(ch_id)
+        if len(mobs) == 0:
+            return None
+        return random.choice(mobs)
