@@ -44,7 +44,7 @@ class Messages:
     msg_attacked = "Вас атакует {name}!\n"
     msg_followed = "К вам движется {name}.\n"
     msg_no_target = "Нет цели для атаки.\n"
-    msg_lost_interest = "{enemy_name} потеряли интерес к {name}.\n"
+    msg_lost_interest = "{enemy_name} потерял интерес к {name}.\n"
     msg_yet_followed = "Вас всё ещё преследуют.\n"
 
     # Лечение
@@ -678,6 +678,10 @@ class Game:
                                 msg += Messages.msg_count_enemy.format(count="не больше десятка ", type=result["enemy_type"])
                         case 3:
                             msg += Messages.msg_count_enemy.format(count=result["search_count"], type=result["enemy_type"])
+
+                case "wrong_channel":
+                    msg += Messages.msg_change_loc
+
                 case _:
                     pass
 
