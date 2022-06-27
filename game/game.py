@@ -219,27 +219,24 @@ class Game:
             return result
 
         if enemy is None:
-            # loc = Location(event.get('channel_id', 0), self.mob_repo.select(event.get('channel_id', 0)))
-            # if loc is None:
-            #     return {"no_loc_err": -1}
+            if not self.mob_repo.is_clean(event.get('channel_id', 0)):
+                detection = random.randint(1, 100)
+                max_d = 47  # TODO
+                dc = player.stealth_chance(max_d)
+                detected = dc <= detection
+                ch_id = event.get('channel_id', 0)
+                result["detected"] = int(detected)
 
-            detection = random.randint(1, 100)
-            max_d = 47  # TODO
-            dc = player.stealth_chance(max_d)
-            detected = dc <= detection
-            ch_id = event.get('channel_id', 0)
-            result["detected"] = int(detected)
-
-            if detected:
-                enemy = self.mob_repo.get_random_idle_mob(ch_id)
-                result["enemy_name"] = enemy.name
-                player.set_enemy(enemy)
-                enemy.in_chase()
-                self.mob_repo.update(enemy)
-                self.player_repo.update(player)
+                if detected:
+                    enemy = self.mob_repo.get_random_idle_mob(ch_id)
+                    if enemy is not None:
+                        result["enemy_name"] = enemy.name
+                        player.set_enemy(enemy)
+                        enemy.in_chase()
+                        self.mob_repo.update(enemy)
+                        self.player_repo.update(player)
 
         result['player_status'] = player.status()
-        result['end'] = True
 
         return result
 
