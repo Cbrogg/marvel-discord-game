@@ -96,7 +96,7 @@ class Game:
 
     # Обработка входящего сообщения
     def exec_event(self, event: dict) -> dict:
-        enemy: Enemy = self.mob_repo.get_by_id(self.player_repo.get_enemy_id_by_player_id(event.get('player_id', 0)))
+        enemy: Enemy | None = self.mob_repo.get_by_id(self.player_repo.get_enemy_id_by_player_id(event.get('player_id', 0)))
         player: Player = self.player_repo.get_by_player_id(event.get('player_id', 0), enemy)
         result = {}
 
@@ -105,19 +105,27 @@ class Game:
         else:
             result["player_name"] = player.name
 
-        if player.effects.get("dodged", False):
-            player.remove_effect("dodged")
-            self.player_repo.update(player)
-
-        if enemy is None and player.get_enemy_id() != "":
-            result['dropped'] = 1
-            player.drop_enemy()
-            self.player_repo.update(player)
-
         actions = event.get('actions', None)
 
         if actions is None:
             return {"no_actions_error": -1}
+
+        if player.effects.get("dodged", False):
+            player.remove_effect("dodged")
+            self.player_repo.update(player)
+
+        if enemy is not None:
+            if enemy.channel != event.get('channel_id', 0):
+                result['wrong_channel'] = 1
+                player.drop_enemy()
+                self.player_repo.update(player)
+                self.mob_repo.update(enemy)
+                enemy = None
+
+        elif enemy is None and player.get_enemy_id() != "":
+            result['dropped'] = 1
+            player.drop_enemy()
+            self.player_repo.update(player)
 
         player.rest()
 
@@ -311,6 +319,7 @@ class Game:
 
                 result["defend_other"] = 1
                 result["new_priority"] = 1
+                result['priority_target'] = player.name
                 result['player2_status'] = player2.status()
                 return result
 
@@ -333,6 +342,16 @@ class Game:
         result["escape"] = int(e)
         if e:
             player.effects['escaped'] = True
+
+            if player.player_id == enemy.get_priority_target_id():
+                enemy.del_target(player.player_id)
+                player2: Player | None = self.player_repo.get_by_player_id(enemy.get_priority_target_id())
+                if player2 is not None:
+                    enemy.inc_priority(player2.player_id)
+                    self.mob_repo.update(enemy)
+                    result["new_priority"] = 1
+                    result["priority_target"] = player2.name
+
             player.drop_enemy()
             player.e_status = 'не замечен'
             self.player_repo.update(player)
@@ -400,6 +419,7 @@ class Game:
                 enemy.inc_priority(player.player_id)
                 enemy.set_priority_target(player)
                 result["new_priority"] = 1
+                result["priority_target"] = player.name
                 self.mob_repo.update(enemy)
 
         player_damage, player_dice = player.deal_damage()
@@ -586,7 +606,10 @@ class Game:
                         case 0:
                             msg += Messages.msg_not_run
                         case 1:
-                            return Messages.msg_run_away
+                            if result.get("new_priority", 0) == 0:
+                                return Messages.msg_run_away
+                            else:
+                                msg += Messages.msg_run_away
 
                 case "assist":
                     match result["assist"]:
@@ -631,7 +654,7 @@ class Game:
                                     msg += Messages.msg_lost_interest.format(enemy_name=result["enemy_name"], name="вам")
 
                 case "new_priority":
-                    msg += Messages.msg_take_target.format(enemy_name=result["enemy_name"], name=result["player_name"])
+                    msg += Messages.msg_take_target.format(enemy_name=result["enemy_name"], name=result["priority_target"])
 
                 case "chased":
                     match result["chased"]:
